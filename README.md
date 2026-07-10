@@ -2,7 +2,7 @@
 
 Plateforme web permettant à une association de gérer ses activités internes (Ressources Humaines, Projets, Bénévoles, Dons) et de présenter son travail au grand public via une vitrine en ligne.
 
->  Projet réalisé dans le cadre d'un stage PFE (Projet de Fin d'Études).
+> 📌 Projet réalisé dans le cadre d'un stage PFE (Projet de Fin d'Études).
 
 ---
 
@@ -78,28 +78,31 @@ association-appweb/
 
 ##  Base de données
 
-Tables principales : `users`, `bureau_membres`, `candidatures_benevoles`, `categories_projets`, `projets`, `photos_projets`, `historique_projets`, `dons`, `messages_contact`, `collaborateurs`.
+Tables principales : `users`, `bureau_membres`, `candidatures_benevoles`, `categories_projets`, `projets`, `photos_projets`, `historique_projets`, `dons`, `messages_contact`, `collaborateurs`, `commentaires_projets`.
 
-Le schéma complet est disponible dans [`database/schema.sql`](database/schema.sql).
-
----
-
-##  Installation locale
-
-1. Installer [XAMPP](https://www.apachefriends.org/) (Apache + PHP + MySQL)
-2. Cloner ce dépôt dans le dossier `htdocs` de XAMPP :
-   ```bash
-   git clone https://github.com/mourtafiaakhadija-png/association-appweb.git
-   ```
-3. Démarrer Apache et MySQL depuis le panneau de contrôle XAMPP
-4. Créer une base de données nommée `association_db` dans phpMyAdmin (collation `utf8mb4_unicode_ci`)
-5. Importer le fichier `database/schema.sql` dans cette base via l'onglet **Import** de phpMyAdmin
-6. Configurer la connexion à la base dans `config/db.php` (identifiants MySQL locaux)
-7. Accéder au projet via `http://localhost/association-appweb/`
+Le schéma complet est disponible dans [`database/schema.sql`](database/schema.sql) (+ [`database/schema_update_sprint4.sql`](database/schema_update_sprint4.sql) pour la table des commentaires, ajoutée en cours de développement).
 
 ---
 
-##  Planning de développement
+##  État d'avancement (mis à jour chaque semaine)
+
+### — Fondations
+- [x] **Sprint 0** : mise en place de l'environnement XAMPP, arborescence du projet, `schema.sql` complet (10 tables)
+- [x] **Sprint 1** : authentification admin sécurisée (`password_hash`, sessions PHP, requêtes préparées PDO, protection contre la fixation de session)
+
+### — Back-office
+- [x] **Sprint 2** : module RH — CRUD complet des membres du bureau (avec upload de photo sécurisé) et des collaborateurs ; suivi automatique des bénévoles/donateurs
+- [x] **Sprint 3** : module Projets — CRUD complet avec catégories, cibles (`famille`/`village`/`ecole`/`orphelin`), budgets, photos multiples, et historique/rapport par projet. Intégration du **contenu réel de l'association** (18 projets, catégories et photos authentiques)
+
+### — Vitrine publique
+- [x] **Sprint 4** : site public complet (accueil, à propos, projets filtrables, détail projet, bureau, membres, galerie), design responsive aux couleurs de l'association (bleu `#1E3E8C` / orange `#E8622C` / doré `#F0B429`), navbar transparente, et **fonctionnalité additionnelle** : système de commentaires publics sur chaque projet (hors cahier des charges initial, ajouté sur demande)
+
+### À venir
+- [ ] **Sprint 5** : module Don (formulaire, enregistrement, mise à jour automatique du budget collecté, email de confirmation)
+- [ ] **Sprint 6** : formulaire de contact + candidature bénévole ("Join us") avec emails automatiques (PHPMailer)
+- [ ] **Sprint 7** : tests, sécurisation finale, déploiement
+
+---
 
 Le projet est découpé en **7 sprints** sur une durée d'un mois :
 
@@ -116,6 +119,18 @@ Le projet est découpé en **7 sprints** sur une durée d'un mois :
 
 ---
 
+##  Identité visuelle
+
+| Couleur | Usage |
+|---|---|
+| `#1E3E8C` (bleu) | Couleur institutionnelle principale |
+| `#E8622C` (orange) | Couleur d'accent chaleureuse (dons, appels à l'action) |
+| `#F0B429` (doré) | Couleur de mise en valeur (progression, chiffres clés) |
+
+Typographies : **Cairo** (titres) et **Tajawal** (texte courant), site entièrement en arabe (RTL).
+
+---
+
 ##  Auteur
 
-Projet réalisé par **khadija Mourtafiaa** dans le cadre d'un stage PFE.
+Projet réalisé par **khadija MOURTAFIAA** dans le cadre d'un stage PFE.

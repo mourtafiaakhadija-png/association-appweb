@@ -1,0 +1,10 @@
+
+
+CREATE TABLE IF NOT EXISTS commentaires_projets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    projet_id INT NOT NULL,
+    nom VARCHAR(150) NOT NULL,
+    message TEXT NOT NULL,
+    date_commentaire DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (projet_id) REFERENCES projets(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

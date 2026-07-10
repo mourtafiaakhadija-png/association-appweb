@@ -1,3 +1,12 @@
 config/db.php
+
 uploads/*
 !uploads/.gitkeep
+!uploads/images/
+!uploads/images/**
+
+vendor/
+composer.lock
+
+.DS_Store
+Thumbs.db
