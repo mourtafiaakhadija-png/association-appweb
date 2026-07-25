@@ -24,7 +24,6 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 2. قفة الخير - Paniers alimentaires Ramadan
--- ⚠️ Budget estimé (150 MAD/panier x 580) — à corriger avec le vrai montant si connu
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'قفة الخير',
@@ -35,7 +34,7 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 3. زكاة الفطر
--- ⚠️ Budget non précisé dans le magazine — à compléter
+
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'زكاة الفطر',
@@ -46,7 +45,7 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 4. ذهب الظمأ - Iftar pour jeûneurs
--- ⚠️ Budget estimé (20 MAD/repas x 700) — à corriger
+
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'ذهب الظمأ',
@@ -57,7 +56,7 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 5. كسوة العيد - Habits de fête pour orphelins
--- ⚠️ Budget estimé (150 MAD/tenue x 120) — à corriger
+
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'كسوة العيد',
@@ -68,7 +67,6 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 6. تميز اليتيم - Cérémonie d'excellence annuelle
--- ⚠️ Budget non précisé — à compléter (prix : tablettes, ordinateurs, tondeuses, etc.)
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'حفل تميز اليتيم',
@@ -99,7 +97,6 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 9. المهرجان القرآني السنوي - Festival coranique "أهل القرآن"
--- ⚠️ Budget non précisé — à compléter
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'المهرجان القرآني السنوي - أهل القرآن',
@@ -110,7 +107,6 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 10.أضحية العيد- Sacrifice Aïd al-Adha
--- ⚠️ Budget estimé (1800 MAD/tête x 46) — à corriger
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'ذهب الأضحى',
@@ -131,7 +127,6 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 12. لننعم جميعا بالدفء - Caravane hivernale
--- ⚠️ Budget non précisé — à compléter
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'لننعم جميعا بالدفء',
@@ -142,7 +137,6 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 13. حملة التبرع بالدم - Don du sang
--- Note : campagne sans budget monétaire (don en nature = le sang), budget_prevu à 0
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'حملة التبرع بالدم',
@@ -153,7 +147,6 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 14. المخيم الصيفي - Camp d'été à Tanger
--- ⚠️ Budget non précisé — à compléter
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'المخيم الصيفي',
@@ -164,7 +157,6 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 15. حملة طبية - Campagne médicale
--- ⚠️ Description et budget non détaillés dans le magazine — à compléter par vos soins
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'حملة طبية',
@@ -185,7 +177,6 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 17. قاعة المطالعة - Salle de lecture
--- ⚠️ Description et budget non détaillés dans le magazine — à compléter
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'قاعة المطالعة',
@@ -196,7 +187,6 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 );
 
 -- 18. عيدية الأيتام - Argent de poche de l'Aïd pour les orphelins
--- ⚠️ Description et budget non détaillés dans le magazine — à compléter
 INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details, budget_prevu, budget_collecte, date_debut, statut) VALUES
 (
     'عيدية الأيتام',
@@ -208,8 +198,6 @@ INSERT INTO projets (titre, description, categorie_id, cible_type, cible_details
 
 -- =========================================================
 -- PHOTOS DES PROJETS
--- ⚠️ Ces fichiers doivent être copiés dans le dossier uploads/images/ AVANT d'importer ce seed.sql
--- (dossier "uploads_a_copier" fourni séparément — à renommer "images" et placer dans uploads/)
 -- =========================================================
 
 INSERT INTO photos_projets (projet_id, url) VALUES

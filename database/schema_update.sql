@@ -8,3 +8,4 @@ CREATE TABLE IF NOT EXISTS commentaires_projets (
     date_commentaire DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (projet_id) REFERENCES projets(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE commentaires_projets ADD COLUMN email VARCHAR(150) NOT NULL AFTER nom;
