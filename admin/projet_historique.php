@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
 
@@ -31,13 +32,13 @@ $historique = $stmt->fetchAll();
 include '../includes/header.php';
 ?>
 
-<h2>Historique / Rapport — <?= htmlspecialchars($projet['titre']) ?></h2>
-<p><a href="projets.php">&larr; Retour aux projets</a></p>
+<h2>السجل / التقرير — <?= htmlspecialchars($projet['titre']) ?></h2>
+<p><a href="projets.php">&larr;الرجوع للمشاريع</a></p>
 
 <form method="POST" class="historique-form">
-    <label>Ajouter une note manuelle à l'historique</label>
-    <textarea name="note" rows="2" placeholder="Ex: Visite de terrain effectuée le 12/07, don en nature reçu..." required></textarea>
-    <button type="submit">Ajouter à l'historique</button>
+    <label>إضافة ملاحظة يدوية إلى السجل</label>
+    <textarea name="note" rows="2" placeholder="مثال: زيارة ميدانية أُجريت بتاريخ 12/07، استلام تبرع عيني ..." required></textarea>
+    <button type="submit">إضافة إلى السجل</button>
 </form>
 
 <div class="timeline">
@@ -47,7 +48,7 @@ include '../includes/header.php';
             <div class="timeline-content">
                 <p><?= htmlspecialchars($h['description_action']) ?></p>
                 <span class="timeline-author">
-                    Par : <?= $h['nom'] ? htmlspecialchars($h['prenom'] . ' ' . $h['nom']) : 'Système' ?>
+                    بواسطة :<?= $h['nom'] ? htmlspecialchars($h['prenom'] . ' ' . $h['nom']) : 'المسؤول' ?>
                 </span>
             </div>
         </div>

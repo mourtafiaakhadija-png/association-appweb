@@ -2,7 +2,6 @@
 session_start();
 require_once '../config/db.php';
 
-// Si déjà connecté, redirection directe vers le dashboard
 if (isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
@@ -15,53 +14,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
     if ($email === '' || $password === '') {
-        $error = "Veuillez remplir tous les champs.";
+        $error = "يرجى ملء جميع الحقول.";
     } else {
         $stmt = $pdo->prepare("SELECT id, nom, prenom, email, password, role FROM users WHERE email = ? AND role = 'admin'");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
         if ($user && password_verify($password, $user['password'])) {
-            // Régénérer l'ID de session pour éviter la fixation de session
             session_regenerate_id(true);
-
             $_SESSION['user_id']     = $user['id'];
             $_SESSION['user_nom']    = $user['nom'];
             $_SESSION['user_prenom'] = $user['prenom'];
             $_SESSION['user_role']   = $user['role'];
-
             header('Location: index.php');
             exit;
         } else {
-            $error = "Email ou mot de passe incorrect.";
+            $error = "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
         }
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - Espace Admin</title>
+    <title>تسجيل الدخول - فضاء الإدارة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/admin.css">
 </head>
-<body>
-    <div class="login-container">
-        <h1>Connexion Administrateur</h1>
+<body class="login-page">
+    <div class="login-card">
+        <h1>فضاء الإدارة</h1>
+        <p class="login-subtitle">جمعية الجيل المبدع</p>
 
         <?php if ($error): ?>
             <p class="error"><?= htmlspecialchars($error) ?></p>
         <?php endif; ?>
 
         <form method="POST" action="login.php">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
+            <label for="email">البريد الإلكتروني</label>
+            <input type="email" id="email" name="email" required autofocus>
 
-            <label for="password">Mot de passe</label>
+            <label for="password">كلمة المرور</label>
             <input type="password" id="password" name="password" required>
 
-            <button type="submit">Se connecter</button>
+            <button type="submit">تسجيل الدخول</button>
         </form>
     </div>
 </body>

@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
 
@@ -46,20 +47,20 @@ $collaborateurs = $pdo->query("SELECT * FROM collaborateurs ORDER BY nom")->fetc
 include '../includes/header.php';
 ?>
 
-<h2>Gestion des Ressources Humaines</h2>
+<h2>إدارة الموارد البشرية</h2>
 
 <nav class="rh-tabs">
-    <a href="?tab=bureau" class="<?= $tab === 'bureau' ? 'active' : '' ?>">Bureau (<?= count($bureau) ?>)</a>
-    <a href="?tab=benevoles" class="<?= $tab === 'benevoles' ? 'active' : '' ?>">Bénévoles (<?= count($benevoles) ?>)</a>
-    <a href="?tab=donateurs" class="<?= $tab === 'donateurs' ? 'active' : '' ?>">Donateurs (<?= count($donateurs) ?>)</a>
-    <a href="?tab=collaborateurs" class="<?= $tab === 'collaborateurs' ? 'active' : '' ?>">Collaborateurs (<?= count($collaborateurs) ?>)</a>
+    <a href="?tab=bureau" class="<?= $tab === 'bureau' ? 'active' : '' ?>">المكتب (<?= count($bureau) ?>)</a>
+    <a href="?tab=benevoles" class="<?= $tab === 'benevoles' ? 'active' : '' ?>">المتطوعون (<?= count($benevoles) ?>)</a>
+    <a href="?tab=donateurs" class="<?= $tab === 'donateurs' ? 'active' : '' ?>">المتبرعون (<?= count($donateurs) ?>)</a>
+    <a href="?tab=collaborateurs" class="<?= $tab === 'collaborateurs' ? 'active' : '' ?>">المتعاونون (<?= count($collaborateurs) ?>)</a>
 </nav>
 
 <?php if ($tab === 'bureau'): ?>
-    <a class="btn-add" href="rh_form.php?type=bureau">+ Ajouter un membre du bureau</a>
+    <a class="btn-add" href="rh_form.php?type=bureau"> إضافة عضو في المكتب +</a>
     <table class="rh-table">
         <thead>
-            <tr><th>Photo</th><th>Nom</th><th>Fonction</th><th>Email</th><th>Actions</th></tr>
+            <tr><th>الصورة</th><th>الاسم</th><th> الصفة/ المنصب</th><th>البريد الإلكتروني</th><th>الإجراءات</th></tr>
         </thead>
         <tbody>
         <?php foreach ($bureau as $m): ?>
@@ -69,19 +70,19 @@ include '../includes/header.php';
                 <td><?= htmlspecialchars($m['fonction']) ?></td>
                 <td><?= htmlspecialchars($m['email']) ?></td>
                 <td>
-                    <a href="rh_form.php?type=bureau&id=<?= $m['id'] ?>">Modifier</a> |
-                    <a href="rh.php?delete=<?= $m['id'] ?>&type=bureau" onclick="return confirm('Supprimer ce membre ?');">Supprimer</a>
+                    <a href="rh_form.php?type=bureau&id=<?= $m['id'] ?>">تعديل</a> |
+                    <a href="rh.php?delete=<?= $m['id'] ?>&type=bureau" onclick="return confirm('Supprimer ce membre ?');">حذف</a>
                 </td>
             </tr>
         <?php endforeach; ?>
-        <?php if (empty($bureau)): ?><tr><td colspan="5">Aucun membre du bureau pour l'instant.</td></tr><?php endif; ?>
+        <?php if (empty($bureau)): ?><tr><td colspan="5">لا يوجد أي عضو في المكتب حالياً .</td></tr><?php endif; ?>
         </tbody>
     </table>
 
 <?php elseif ($tab === 'benevoles'): ?>
-    <p class="info-note">Les bénévoles apparaissent ici automatiquement après acceptation de leur candidature </p>
+    <p class="info-note">يظهر المتطوعون هنا تلقائياً بعد قبول طلبات ترشحهم </p>
     <table class="rh-table">
-        <thead><tr><th>Nom</th><th>Email</th><th>Téléphone</th><th>Statut</th><th>Inscrit le</th></tr></thead>
+        <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الهاتف</th><th>الحالة</th><th>مسجل في</th></tr></thead>
         <tbody>
         <?php foreach ($benevoles as $b): ?>
             <tr>
@@ -92,14 +93,14 @@ include '../includes/header.php';
                 <td><?= htmlspecialchars($b['created_at']) ?></td>
             </tr>
         <?php endforeach; ?>
-        <?php if (empty($benevoles)): ?><tr><td colspan="5">Aucun bénévole pour l'instant.</td></tr><?php endif; ?>
+        <?php if (empty($benevoles)): ?><tr><td colspan="5">لا يوجد أي متطوع حالياً</td></tr><?php endif; ?>
         </tbody>
     </table>
 
 <?php elseif ($tab === 'donateurs'): ?>
-    <p class="info-note">Les donateurs apparaissent ici automatiquement dès qu'un don est enregistré.</p>
+    <p class="info-note">.يظهر المتبرعون هنا تلقائياً بمجرد تسجيل تبرع جديد</p>
     <table class="rh-table">
-        <thead><tr><th>Nom</th><th>Email</th><th>Nombre de dons</th><th>Total donné</th></tr></thead>
+        <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>عدد التبرعات</th><th>المجموع المقدم</th></tr></thead>
         <tbody>
         <?php foreach ($donateurs as $d): ?>
             <tr>
@@ -109,14 +110,14 @@ include '../includes/header.php';
                 <td><?= number_format((float) $d['total'], 2) ?> MAD</td>
             </tr>
         <?php endforeach; ?>
-        <?php if (empty($donateurs)): ?><tr><td colspan="4">Aucun don pour l'instant.</td></tr><?php endif; ?>
+        <?php if (empty($donateurs)): ?><tr><td colspan="4">لا يوجد أي تبرع في الوقت الحالي</td></tr><?php endif; ?>
         </tbody>
     </table>
 
 <?php elseif ($tab === 'collaborateurs'): ?>
-    <a class="btn-add" href="rh_form.php?type=collaborateur">+ Ajouter un collaborateur</a>
+    <a class="btn-add" href="rh_form.php?type=collaborateur"> إضافة متعاون +</a>
     <table class="rh-table">
-        <thead><tr><th>Logo</th><th>Nom</th><th>Description</th><th>Actions</th></tr></thead>
+        <thead><tr><th>Logo</th><th>الاسم</th><th>الوصف</th><th>الإجراءات</th></tr></thead>
         <tbody>
         <?php foreach ($collaborateurs as $c): ?>
             <tr>
@@ -124,12 +125,12 @@ include '../includes/header.php';
                 <td><?= htmlspecialchars($c['nom']) ?></td>
                 <td><?= htmlspecialchars($c['description'] ?? '-') ?></td>
                 <td>
-                    <a href="rh_form.php?type=collaborateur&id=<?= $c['id'] ?>">Modifier</a> |
-                    <a href="rh.php?delete=<?= $c['id'] ?>&type=collaborateur" onclick="return confirm('Supprimer ce collaborateur ?');">Supprimer</a>
+                    <a href="rh_form.php?type=collaborateur&id=<?= $c['id'] ?>">تعديل</a> |
+                    <a href="rh.php?delete=<?= $c['id'] ?>&type=collaborateur" onclick="return confirm('Supprimer ce collaborateur ?');">حذف</a>
                 </td>
             </tr>
         <?php endforeach; ?>
-        <?php if (empty($collaborateurs)): ?><tr><td colspan="4">Aucun collaborateur pour l'instant.</td></tr><?php endif; ?>
+        <?php if (empty($collaborateurs)): ?><tr><td colspan="4">لا يوجد متعاونون في الوقت الحالي</td></tr><?php endif; ?>
         </tbody>
     </table>
 <?php endif; ?>

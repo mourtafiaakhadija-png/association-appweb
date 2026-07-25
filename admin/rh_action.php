@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
 require_once '../includes/upload_helper.php';
