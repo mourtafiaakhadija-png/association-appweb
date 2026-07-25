@@ -1,0 +1,579 @@
+/* ===========================================================
+   FFoundation 
+   =========================================================== */
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+body {
+    font-family: "Marhey", sans-serif;
+    background: #f4f5f7;
+    color: #222;
+    direction: rtl;
+}
+/* ===========================================================
+   Header — logo/titre + navigation en pilule + profil utilisateur
+   =========================================================== */
+.benevole-header {
+    background: linear-gradient(135deg, #1E3E8C, #12275c);
+    color: #fff;
+    padding: 0.9rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.benevole-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+.benevole-header-logo {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+}
+.benevole-header-brand h1 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.benevole-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.35rem;
+    border-radius: 30px;
+    flex-wrap: wrap;
+}
+.benevole-nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    font-size: 0.88rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 24px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.benevole-nav a i { font-size: 0.8rem; }
+.benevole-nav a:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+}
+.benevole-nav a.active {
+    background: #F0B429;
+    color: #12275c;
+    font-weight: 700;
+}
+
+.benevole-header-user {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+.benevole-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #E8622C;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+.benevole-header-user span {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+}
+.benevole-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+}
+.benevole-logout-btn:hover {
+    background: #E8622C;
+    border-color: #E8622C;
+}
+.benevole-content {
+    padding: 2.5rem clamp(1.5rem, 5vw, 4rem) 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.benevole-content > h2 {
+    margin-top: 0;
+    margin-bottom: 0.6rem;
+    font-size: 1.4rem;
+    color: #1E3E8C;
+}
+.benevole-content > .info-note {
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+    .benevole-header { justify-content: center; text-align: center; }
+    .benevole-nav { order: 3; width: 100%; justify-content: center; }
+}
+
+
+/* ===========================================================
+   Page de connexion
+   =========================================================== */
+.login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-image: url('../images/association_background.jpeg');
+    background-size: cover;
+    background-position: center;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    max-width: 380px;
+    width: 90%;
+    padding: 2.2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35);
+    text-align: center;
+}
+
+.login-card h1 {
+    color: #fff;
+    font-size: 1.5rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.login-subtitle {
+    color: rgba(62, 70, 91, 0.85);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.479);
+}
+
+.login-card form {
+    text-align: right;
+}
+
+.login-card label {
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.login-card input {
+    width: 100%;
+    padding: 0.65rem;
+    margin-top: 0.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    font-family: inherit;
+    background: rgba(255, 255, 255, 0.85);
+    color: #222;
+}
+.login-card input:focus {
+    outline: none;
+    border-color: #E8622C;
+    background: #fff;
+}
+
+.login-card button {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    background: #E8622C;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+.login-card button:hover {
+    background: #d1541f;
+}
+
+/* ===========================================================
+   Éléments communs (notes, erreurs, boutons, badges)
+   =========================================================== */
+.info-note { 
+    background: #eff6ff; 
+    padding: 0.7rem 1rem; 
+    border-radius: 8px; 
+    color: #1e40af; 
+    margin-bottom: 1rem; 
+    font-size: 1rem; 
+}
+.error { 
+    color: #dc2626; 
+    margin-top: 1rem; 
+    font-size: 1rem; 
+}
+
+.badge-empty { 
+    background: #f4f5f7; 
+    padding: 0.7rem 1rem; 
+    border-radius: 8px; 
+    color: #888; 
+    font-size: 0.9rem; 
+}
+
+.btn-add {
+    display: inline-block; 
+    margin-top: 0.8rem; 
+    padding: 0.5rem 1rem;
+    background: #1E3E8C; 
+    color: #fff; 
+    text-decoration: none; 
+    border-radius: 6px; 
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+.btn-cancel { 
+    margin-right: 1rem; 
+    color: #666; 
+    text-decoration: none; 
+}
+
+.badge { 
+    font-size: 0.7rem; 
+    padding: 0.25rem 0.7rem; 
+    border-radius: 10px; 
+    color: #fff; 
+    display: inline-block; 
+    margin-left: 0.4rem; 
+}
+.badge-secondary { 
+    font-size: 0.7rem; 
+    padding: 0.25rem 0.7rem; 
+    border-radius: 10px; 
+    background: #e5e7eb; 
+    color: #333; display: 
+    inline-block; 
+}
+
+/* Statuts de projet */
+.badge-en_cours { 
+    background: #2563eb; 
+}
+.badge-termine { 
+    background: #16a34a; 
+}
+.badge-suspendu { 
+    background: #d97706; 
+}
+
+/* Statuts d'édition */
+.badge-brouillon { 
+    background: #6b7280; 
+}
+.badge-en_attente_validation { 
+    background: #d97706; 
+}
+.badge-a_corriger { 
+    background: #dc2626; 
+}
+.badge-validee { 
+    background: #16a34a; 
+}
+
+/* ===========================================================
+   Tableau (listes de dons, historique...)
+   =========================================================== */
+.rh-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    background: #fff; 
+    border-radius: 8px; 
+    overflow: hidden; 
+}
+.rh-table th, .rh-table td { 
+    padding: 0.7rem; 
+    border-bottom: 1px solid #eee; 
+    text-align: right; 
+}
+.rh-table th { 
+    background: #f4f5f7; 
+}
+.rh-table a { 
+    color: #1E3E8C; 
+    text-decoration: none; 
+    margin-left: 0.5rem; 
+}
+
+.rh-tabs { 
+    display: flex; 
+    gap: 0.5rem; 
+    margin: 1.5rem 0 1rem; 
+    border-bottom: 1px solid #ddd; 
+}
+.rh-tabs a { 
+    padding: 0.6rem 1rem; 
+    text-decoration: none; 
+    color: #555; 
+    border-bottom: 3px solid transparent; 
+}
+.rh-tabs a.active { 
+    color: #1E3E8C; 
+    border-bottom-color: #1E3E8C; 
+    font-weight: bold; 
+}
+
+/* ===========================================================
+   Tableau de bord : grille de projets
+   =========================================================== */
+.benevole-projets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.4rem;
+    margin-top: 1.5rem;
+}
+.benevole-projet-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.6rem;
+    box-shadow: 0 4px 20px rgba(18,39,92,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.benevole-projet-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(18, 39, 92, 0.12);
+}
+.benevole-projet-card h3 { 
+    color: #1E3E8C; 
+    margin-bottom: 0.5rem; 
+}
+.benevole-stat { 
+    font-size: 0.85rem; 
+    color: #444; 
+    margin-top: 0.5rem; 
+}
+
+.projet-budget { 
+    font-size: 0.85rem; 
+    color: #444; 
+    margin-top: 0.4rem; 
+}
+
+.project-progress { 
+    background: #e5e7eb; 
+    border-radius: 6px; 
+    height: 10px; 
+    overflow: hidden; 
+    margin-top: 0.6rem; 
+}
+.project-progress-fill { 
+    background: #F0B429; 
+    height: 100%; 
+}
+
+/* ===========================================================
+   Formulaires (édition, rapport...)
+   =========================================================== */
+.projet-form { 
+    max-width: 650px; 
+    background: #fff; 
+    padding: 1.5rem; 
+    border-radius: 10px; 
+}
+.projet-form label { 
+    display: block; 
+    margin-top: 1rem; 
+    font-size: 0.9rem; 
+    font-weight: bold; 
+}
+.projet-form input[type="text"],
+.projet-form input[type="number"],
+.projet-form input[type="date"],
+.projet-form input[type="email"],
+.projet-form select,
+.projet-form textarea {
+    width: 100%; 
+    padding: 0.55rem; 
+    margin-top: 0.35rem;
+    border: 1px solid #ccc; 
+    border-radius: 6px; 
+    font-family: inherit;
+}
+.projet-form input[type="file"] { 
+    margin-top: 0.4rem; 
+}
+.projet-form button {
+    margin-top: 1.5rem; 
+    padding: 0.65rem 1.3rem; 
+    background: #1E3E8C; 
+    color: #fff;
+    border: none; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-family: inherit; 
+    font-weight: bold;
+}
+.form-row { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 1rem; 
+}
+@media (max-width: 640px) {
+    .form-row { grid-template-columns: 1fr; }
+}
+
+.existing-photos { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 0.6rem; 
+    margin-top: 0.8rem; 
+}
+.existing-photo { 
+    position: relative; 
+}
+.existing-photo img { 
+    width: 90px; 
+    height: 90px; 
+    object-fit: cover; 
+    border-radius: 6px; 
+}
+.existing-photo a { 
+    position: absolute; 
+    top: -6px; 
+    left: -6px; 
+    background: #dc2626; 
+    color: #fff; 
+    border-radius: 50%; 
+    width: 20px; 
+    height: 20px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    text-decoration: none; 
+    font-size: 0.75rem; 
+}
+.profil input[type=password] {
+    width: 100%; 
+    padding: 0.55rem; 
+    margin-top: 0.35rem;
+    border: 1px solid #ccc; 
+    border-radius: 6px; 
+    font-family: inherit;
+}
+.profil button {
+    margin-top: 1.5rem; 
+    padding: 0.65rem 1.3rem; 
+    background: #1E3E8C; 
+    color: #fff;
+    border: none; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-family: inherit; 
+    font-weight: bold;
+}
+.profil button:hover {
+    background: #2b4da2;
+}
+.profil label{
+    font-family: "Bungee", sans-serif;
+    font-weight: bold;
+    margin-top: 0.9rem;
+}
+.profil{
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.6rem;
+    box-shadow: 0 4px 20px rgba(18,39,92,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+/* ===========================================================
+   Footer 
+   =========================================================== */
+.benevole-footer {
+    background: #1E3E8C;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 3rem;
+    padding: 1.8rem 1.5rem 1.2rem;
+    text-align: center;
+}
+
+.benevole-footer-links {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 1.6rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.benevole-footer-links a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.9rem;
+
+}
+
+.benevole-footer-links a:hover {
+    color: #F0B429;
+}
+
+/* Le lien retour au site public se distingue légèrement des autres */
+.benevole-footer-links a[href*="public"] {
+    color: #F0B429;
+    font-weight: bold;
+}
+
+.benevole-footer p {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 0;
+}
+.benevole-footer-brand {
+    margin-bottom: 1.2rem;
+}
+.benevole-footer-logo {
+    width: 48px;
+    margin-bottom: 0.6rem;
+    filter: brightness(0) invert(1);
+}
+.benevole-footer-brand h3 {
+    color: #fff;
+    font-size: 1.05rem;
+    margin-bottom: 0.3rem;
+}
+.benevole-footer-brand p {
+    color: #F0B429;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+.fa-solid, .fa-regular { margin-left: 0.35rem; }
