@@ -34,15 +34,15 @@ include '../includes/header_public.php';
     <div class="container">
         <div class="values-grid">
             <div class="value-card">
-                <h3>🎯 رؤيتنا</h3>
+                <h3><i class="fa-solid fa-bullseye " style="color: var(--gold);"></i> رؤيتنا</h3>
                 <p>مجتمع متضامن تُصان فيه كرامة اليتيم والمحتاج، ويجد فيه كل محتاج يد العون والرعاية الكاملة داخل بيئته الأسرية والاجتماعية، بروح من العطاء والتطوع المستمر.</p>
             </div>
             <div class="value-card">
-                <h3>🤲 رسالتنا</h3>
+                <h3><i class="fa-solid fa-hand-holding-heart" style="color: var(--gold);"></i> رسالتنا</h3>
                 <p>مساعدة الأرامل والأيتام وتوفير الرعاية المادية والصحية والتعليمية والتربوية لأسرة اليتيم عن قرب في وسطها الأسري، والاهتمام بتحفيظ القرآن الكريم وتدريس العلوم الشرعية للناشئة، ونقل أمانة الأمة عبر إطلاق مشاريع خيرية متنوعة.</p>
             </div>
             <div class="value-card">
-                <h3>📌 أهدافنا</h3>
+                <h3><i class="fa-solid fa-flag" style="color: var(--gold);"></i> أهدافنا</h3>
                 <p>
                     • توفير كفالة شهرية تُلبي الحاجيات الأساسية لليتيم<br>
                     • دعم التمدرس والحد من الهدر المدرسي<br>

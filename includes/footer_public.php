@@ -8,7 +8,7 @@
         <div class="footer-col footer-brand">
             <img src="images/logo_association.png" alt="جمعية الجيل المبدع" class="footer-logo" onerror="this.style.display='none'">
             <h3>جمعية الجيل المبدع</h3>
-            <p>وتطيب الحياة ... بروح العطاء</p>
+            <p>وتطيب الحياة ... بروح التطوع</p>
         </div>
 
         <div class="footer-col">
@@ -21,23 +21,28 @@
 
         <div class="footer-col">
             <h4>تواصلوا معنا</h4>
-            <p>📍 دوار أولاد عيسى، جماعة أولاد عيسى، قيادة إكلي، إقليم تارودانت</p>
-            <p>📞 212648656411+ / 212611249905+</p>
-            <p>✉️ ass.generation.creative@gmail.com</p>
+            <a href="https://maps.app.goo.gl/6HaAaGUSCJskmP1p9"><i class="fa-solid fa-location-dot" style="color: red;"></i>  دوار أولاد عيسى، جماعة أولاد عيسى، قيادة إكلي، إقليم تارودانت</a>
+            <p><i class="fa-solid fa-phone-flip" style="color: #fff;"></i>  212648656411+ / 212611249905+</p>
+            <a href="mailto:ass.generation.creative@gmail.com"><i class="fa-solid fa-envelope" style="color: #fff;"></i>  ass.generation.creative@gmail.com</a>
         </div>
 
         <div class="footer-col">
             <h4>حساب التبرعات</h4>
             <p class="rib">RIB: 350810000000110741288</p>
             <div class="social-links">
-                <a href="https://www.facebook.com/share/17ncGEPvD2/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook">Facebook</a>
-                <a href="https://www.instagram.com/ass.generation.creative/" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+                <a href="https://www.facebook.com/share/17ncGEPvD2/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook fa-2x"></i></a>
+                <a href="https://www.instagram.com/ass.generation.creative/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-square-instagram fa-2x"></i></a>
             </div>
         </div>
     </div>
     <div class="footer-bottom">
         <p>&copy; <?= date('Y') ?> جمعية الجيل المبدع — Association de Génération Créative</p>
     </div>
+    <div class="footer-admin-link">
+    <a href="../admin/login.php">Espace Admin</a>
+    </br>
+    <a href="../benevole/login.php">Espace Bénévole</a>
+</div>
 </footer>
 
 <script src="js/main.js"></script>

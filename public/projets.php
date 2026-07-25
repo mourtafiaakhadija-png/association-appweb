@@ -6,8 +6,18 @@ include '../includes/header_public.php';
 $filtreCategorie = $_GET['categorie'] ?? '';
 
 $sql = "SELECT p.*, c.nom AS categorie_nom,
-               (SELECT url FROM photos_projets WHERE projet_id = p.id ORDER BY date_ajout LIMIT 1) AS photo
-        FROM projets p LEFT JOIN categories_projets c ON p.categorie_id = c.id WHERE 1=1";
+               e.id AS edition_id, e.numero_edition, e.description AS edition_description,
+               e.budget_prevu, e.budget_collecte,
+               (SELECT url FROM photos_projets WHERE edition_id = e.id ORDER BY date_ajout LIMIT 1) AS photo
+        FROM projets p
+        LEFT JOIN categories_projets c ON p.categorie_id = c.id
+        JOIN projet_editions e ON e.id = (
+            SELECT id FROM projet_editions
+            WHERE projet_id = p.id AND statut = 'validee'
+            ORDER BY numero_edition DESC, date_debut DESC
+            LIMIT 1
+        )
+        WHERE 1=1";
 $params = [];
 if ($filtreCategorie !== '') {
     $sql .= " AND p.categorie_id = ?";
@@ -54,10 +64,15 @@ $categories = $pdo->query("SELECT * FROM categories_projets ORDER BY nom")->fetc
                 <?php endif; ?>
                 <div class="project-card-body">
                     <span class="project-tag"><?= htmlspecialchars($p['categorie_nom'] ?? 'مشروع') ?></span>
-                    <h3><?= htmlspecialchars($p['titre']) ?></h3>
-                    <p><?= htmlspecialchars(mb_substr($p['description'], 0, 90)) ?>...</p>
+                    <h3><?= htmlspecialchars($p['titre']) ?> <small>#<?= $p['numero_edition'] ?></small></h3>
+                    <p><?= htmlspecialchars(mb_substr($p['edition_description'], 0, 90)) ?>...</p>
                     <div class="project-progress"><div class="project-progress-fill" style="width:<?= $pct ?>%;"></div></div>
-                    <div class="project-progress-label"><?= number_format($p['budget_collecte'],0) ?> / <?= number_format($p['budget_prevu'],0) ?> د.م. (<?= $pct ?>%)</div>
+                    <div class="project-progress-label">
+                        <?= number_format($p['budget_collecte'],0) ?> / <?= number_format($p['budget_prevu'],0) ?> د.م. (<?= $pct ?>%)
+                        <?php if ($p['budget_collecte'] > $p['budget_prevu']): ?>
+                            <span class="badge-goal-reached">🎉 الهدف تحقق</span>
+                        <?php endif; ?>
+                    </div>
                     <a href="projet_detail.php?id=<?= $p['id'] ?>" class="project-card-link">اقرأ المزيد ←</a>
                 </div>
             </div>

@@ -1,0 +1,143 @@
+
+/* ---------- Sprint 5 : Dons ---------- */
+
+.don-layout { 
+    display: grid; 
+    grid-template-columns: 1.3fr 1fr; 
+    gap: 2rem; 
+    align-items: start; 
+}
+@media (max-width: 850px) { .don-layout { grid-template-columns: 1fr; } }
+
+.don-form-card, .don-info-card {
+    background: #fff; 
+    border-radius: var(--radius); 
+    padding: 1.8rem; 
+    box-shadow: 0 4px 18px rgba(30,62,140,0.08);
+}
+.don-form { 
+    display: flex; 
+    flex-direction: column; 
+}
+.don-form label { 
+    display: block; 
+    margin-top: 1rem; 
+    font-size: 0.9rem; 
+    font-weight: 700; 
+    color: var(--blue-dark); 
+}
+.don-form input, .don-form select {
+    width: 100%; 
+    padding: 0.65rem; 
+    margin-top: 0.35rem; 
+    border: 1px solid var(--border); 
+    border-radius: 8px; 
+    font-family: var(--font-body);
+
+}
+.don-form button {
+    margin-top: 1.5rem; 
+    padding: 0.85rem; 
+    background: var(--orange); 
+    color: #fff; 
+    border: none; 
+    border-radius: 30px;
+    font-weight: 700; 
+    font-size: 1rem; 
+    cursor: pointer;
+}
+.don-form button:hover { 
+    background: var(--orange-dark); 
+}
+.form-note { 
+    font-size: 0.8rem; 
+    color: var(--ink-soft); 
+    margin-top: 0.8rem; 
+    text-align: center; 
+}
+
+.rib-box {
+    background: var(--cream); 
+    border: 2px dashed var(--gold); 
+    border-radius: 10px; 
+    padding: 1rem;
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.3rem; 
+    margin: 1rem 0;
+}
+.rib-box span { 
+    font-size: 0.8rem; 
+    color: var(--ink-soft); 
+}
+.rib-box strong { 
+    font-size: 1.1rem; 
+    direction: ltr; 
+    text-align: right; 
+    color: var(--blue-dark); 
+}
+.don-info-note { 
+    font-size: 0.85rem; 
+    color: var(--ink-soft); 
+}
+
+.btn-outline-blue {
+    display: inline-block; 
+    border: 2px solid var(--blue); 
+    color: var(--blue); 
+    padding: 0.6rem 1.4rem;
+    border-radius: 30px; 
+    font-weight: 700; 
+    margin-top: 0.5rem;
+}
+.btn-outline-blue:hover { 
+    background: var(--blue); 
+    color: #fff; 
+}
+
+.search-dons-form { 
+    display: flex; 
+    gap: 0.7rem; 
+    margin-bottom: 1rem; 
+}
+.search-dons-form input { 
+    flex: 1; 
+    padding: 0.7rem; 
+    border: 1px solid var(--border); 
+    border-radius: 8px; 
+}
+.search-dons-form button { 
+    padding: 0.7rem 1.5rem; 
+    background: var(--blue); 
+    color: #fff; 
+    border: none; 
+    border-radius: 8px; 
+    font-weight: 700; 
+    cursor: pointer; 
+}
+
+.dons-list { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.8rem; 
+}
+.don-item {
+    background: #fff; 
+    border-radius: 10px; 
+    padding: 1rem 1.3rem; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(30,62,140,0.06);
+}
+.don-item-date { 
+    font-size: 0.8rem; 
+    color: #999; 
+    margin-top: 0.2rem; 
+}
+.don-item-amount { 
+    font-family: var(--font-display); 
+    font-weight: 800; 
+    color: var(--gold); 
+    font-size: 1.1rem; 
+}

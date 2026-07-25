@@ -1,12 +1,14 @@
 config/db.php
-
+config/mail.php
 uploads/*
 !uploads/.gitkeep
 !uploads/images/
 !uploads/images/**
 
+
 vendor/
 composer.lock
-
 .DS_Store
 Thumbs.db
+.vscode/
+*.log

@@ -3,30 +3,70 @@ require_once '../config/db.php';
 $pageTitle = 'الرئيسية';
 include '../includes/header_public.php';
 
-// Projets à la une : les 3 derniers projets en cours ou terminés avec au moins une photo
+
+// Éditions "à la une" marquées explicitement par l'admin, une seule par projet (la plus récente)
 $stmt = $pdo->query(
-    "SELECT p.*, c.nom AS categorie_nom,
-            (SELECT url FROM photos_projets WHERE projet_id = p.id ORDER BY date_ajout LIMIT 1) AS photo
-     FROM projets p LEFT JOIN categories_projets c ON p.categorie_id = c.id
-     ORDER BY p.created_at DESC LIMIT 3"
+    "SELECT p.id, p.titre, c.nom AS categorie_nom,
+            e.numero_edition, e.description AS edition_description, e.budget_prevu, e.budget_collecte,
+            (SELECT url FROM photos_projets WHERE edition_id = e.id ORDER BY date_ajout LIMIT 1) AS photo
+     FROM projets p
+     JOIN projet_editions e ON e.id = (
+         SELECT id FROM projet_editions
+         WHERE projet_id = p.id AND statut = 'validee' AND a_la_une = 1
+         ORDER BY numero_edition DESC, date_debut DESC
+         LIMIT 1
+     )
+     LEFT JOIN categories_projets c ON p.categorie_id = c.id
+     ORDER BY e.date_creation DESC LIMIT 3"
 );
 $projetsAlaUne = $stmt->fetchAll();
+
+// Si l'admin n'a encore rien mis "à la une", on affiche les 3 projets avec leur édition actuelle la plus récente
+if (empty($projetsAlaUne)) {
+    $stmt = $pdo->query(
+        "SELECT p.id, p.titre, c.nom AS categorie_nom,
+                e.numero_edition, e.description AS edition_description, e.budget_prevu, e.budget_collecte,
+                (SELECT url FROM photos_projets WHERE edition_id = e.id ORDER BY date_ajout LIMIT 1) AS photo
+         FROM projets p
+         JOIN projet_editions e ON e.id = (
+             SELECT id FROM projet_editions
+             WHERE projet_id = p.id AND statut = 'validee'
+             ORDER BY numero_edition DESC, date_debut DESC
+             LIMIT 1
+         )
+         LEFT JOIN categories_projets c ON p.categorie_id = c.id
+         ORDER BY e.date_creation DESC LIMIT 3"
+    );
+    $projetsAlaUne = $stmt->fetchAll();
+}
 
 $nbProjets = $pdo->query("SELECT COUNT(*) FROM projets")->fetchColumn();
 ?>
 
+<?php
+$photosHero = $pdo->query("
+SELECT url FROM photos_projets ORDER BY RAND() LIMIT 12"
+)->fetchAll();
+?>
+
 <section class="hero">
+    <div class="hero-bg-slider" id="heroSlider">
+        <?php foreach ($photosHero as $i => $ph): ?>
+            <img src="../uploads/<?= htmlspecialchars($ph['url']) ?>" class="<?= $i === 0 ?'active' : '' ?>">
+            <?php endforeach; ?>
+    </div>
+    <div class="hero-overlay"></div>
+
     <div class="container hero-inner">
-        <div>
             <span class="hero-eyebrow">جمعية الجيل المبدع — تارودانت</span>
-            <h1>وتطيب الحياة ... بروح العطاء</h1>
+            <h1>وتطيب الحياة ... بروح التطوع</h1>
             <p class="lead">نعمل منذ 2020 على مساعدة الأرامل والأيتام، وتوفير الرعاية المادية والصحية والتعليمية والتربوية لأسرة اليتيم عن قرب، وسط أسرته وبيئته.</p>
             <div class="hero-actions">
                 <a href="don.php" class="btn-white">تبرع الآن</a>
                 <a href="projets.php" class="btn-outline-white">اكتشف مشاريعنا</a>
             </div>
         </div>
-        <img src="images/hero_placeholder.jpg" alt="جمعية الجيل المبدع" class="hero-image" onerror="this.style.display='none'">
+    
     </div>
 
     <svg class="torn-edge" viewBox="0 0 1200 60" preserveAspectRatio="none">
@@ -66,9 +106,14 @@ $nbProjets = $pdo->query("SELECT COUNT(*) FROM projets")->fetchColumn();
                 <div class="project-card-body">
                     <span class="project-tag"><?= htmlspecialchars($p['categorie_nom'] ?? 'مشروع') ?></span>
                     <h3><?= htmlspecialchars($p['titre']) ?></h3>
-                    <p><?= htmlspecialchars(mb_substr($p['description'], 0, 90)) ?>...</p>
-                    <div class="project-progress"><div class="project-progress-fill" style="width:<?= $pct ?>%;"></div></div>
-                    <div class="project-progress-label"><?= number_format($p['budget_collecte'],0) ?> / <?= number_format($p['budget_prevu'],0) ?> د.م. (<?= $pct ?>%)</div>
+                    <p><?= htmlspecialchars(mb_substr($p['edition_description'], 0, 90)) ?>...</p>
+                   <div class="project-progress"><div class="project-progress-fill" style="width:<?= $pct ?>%;"></div></div>
+                   <div class="project-progress-label">
+                        <?= number_format($p['budget_collecte'],0) ?> / <?= number_format($p['budget_prevu'],0) ?> د.م. (<?= $pct ?>%)
+                        <?php if ($p['budget_collecte'] > $p['budget_prevu']): ?>
+                            <span class="badge-goal-reached">🎉 الهدف تحقق</span>
+                    <?php endif; ?>
+                    </div>
                     <a href="projet_detail.php?id=<?= $p['id'] ?>" class="project-card-link">اقرأ المزيد ←</a>
                 </div>
             </div>

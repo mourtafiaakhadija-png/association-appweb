@@ -1,5 +1,5 @@
 <?php
-// public/comment_action.php
+
 require_once '../config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -9,19 +9,28 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $projetId = (int) ($_POST['projet_id'] ?? 0);
 $nom = trim($_POST['nom'] ?? '');
+$email = trim($_POST['email'] ?? '');
 $message = trim($_POST['message'] ?? '');
 
-// Validation simple côté serveur (ne jamais se fier uniquement au HTML "required")
-if ($projetId > 0 && $nom !== '' && $message !== '') {
+if ($projetId > 0 && $nom !== '' && $message !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $nom = mb_substr($nom, 0, 150);
     $message = mb_substr($message, 0, 1000);
 
     $stmt = $pdo->prepare("SELECT id FROM projets WHERE id = ?");
     $stmt->execute([$projetId]);
+
     if ($stmt->fetch()) {
+        // On vérifie si cet email a déjà commenté avant, sous quel nom
+        $stmtNom = $pdo->prepare("SELECT nom FROM commentaires_projets WHERE email = ? ORDER BY date_commentaire ASC LIMIT 1");
+        $stmtNom->execute([$email]);
+        $ancienNom = $stmtNom->fetchColumn();
+
+        // Si l'email est déjà connu, on impose son nom d'origine (empêche de changer d'identité)
+        $nomFinal = $ancienNom ?: $nom;
+
         $pdo->prepare(
-            "INSERT INTO commentaires_projets (projet_id, nom, message) VALUES (?, ?, ?)"
-        )->execute([$projetId, $nom, $message]);
+            "INSERT INTO commentaires_projets (projet_id, nom, email, message) VALUES (?, ?, ?, ?)"
+        )->execute([$projetId, $nomFinal, $email, $message]);
     }
 }
 
