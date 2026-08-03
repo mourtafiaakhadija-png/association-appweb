@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 require_once '../includes/auth_check_benevole.php';
 require_once '../config/db.php';
 
@@ -13,6 +14,7 @@ $succes = '';
 $erreur = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifierJetonCsrf();
     $motDePasseActuel = $_POST['mot_de_passe_actuel'] ?? '';
     $nouveauMotDePasse = $_POST['nouveau_mot_de_passe'] ?? '';
     $confirmation = $_POST['confirmation'] ?? '';
@@ -52,6 +54,7 @@ include '../includes/header_benevole.php';
 <?php if ($erreur): ?><p class="error"><?= htmlspecialchars($erreur) ?></p><?php endif; ?>
 
 <form method="POST" class="profil" style="max-width:500px;">
+    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
     <label>كلمة المرور الحالية</label>
     <input type="password" name="mot_de_passe_actuel" required>
 

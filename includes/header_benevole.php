@@ -31,3 +31,6 @@
     </div>
 </header>
 <main class="benevole-content">
+<?php if (basename($_SERVER['PHP_SELF']) !== 'index.php'): ?>
+    <button onclick="history.back()" class="benevole-back-btn"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+<?php endif; ?>

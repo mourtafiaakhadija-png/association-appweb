@@ -69,7 +69,7 @@ try {
 
     $bodyHtml = "
         <div dir='rtl' style='font-family:Tajawal,Arial,sans-serif; max-width:600px; margin:0 auto;'>
-            <h2 style='color:#1E3E8C;'>شكرا لكم على تبرعكم 🤲</h2>
+            <h2 style='color:#1E3E8C;'>شكرا لكم على تبرعكم </h2>
             <p>عزيزي/عزيزتي " . htmlspecialchars($nomDonateur) . "،</p>
             <p>تلقينا نيتكم للتبرع بالتفاصيل التالية:</p>
             <table style='width:100%; border-collapse:collapse; margin:1rem 0;'>

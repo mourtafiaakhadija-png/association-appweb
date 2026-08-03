@@ -1,5 +1,7 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
+require_once '../includes/error_handler.php';
 require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
@@ -11,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+verifierJetonCsrf();
 $id = isset($_POST['id']) ? (int) $_POST['id'] : null;
 $isEdit = $id !== null;
 
@@ -49,5 +52,6 @@ try {
     exit;
 
 } catch (Exception $e) {
-    die("Erreur : " . htmlspecialchars($e->getMessage()));
+    if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
+    gererErreur($e, "حدث خطأ أثناء العملية. يرجى المحاولة مرة أخرى أو التواصل مع الإدارة.");
 }

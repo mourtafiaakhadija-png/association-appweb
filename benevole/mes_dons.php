@@ -12,8 +12,10 @@ $stmtUser->execute([$benevoleId]);
 $email = $stmtUser->fetchColumn();
 
 $stmt = $pdo->prepare(
-    "SELECT d.*, p.titre, p.id as projet_id FROM dons d 
+    "SELECT d.*, p.titre, p.id as projet_id, e.numero_edition, e.budget_collecte, e.budget_prevu
+     FROM dons d 
      JOIN projets p ON d.projet_id = p.id 
+     LEFT JOIN projet_editions e ON d.edition_id = e.id
      WHERE d.email_donateur = ? ORDER BY d.date_don DESC"
 );
 $stmt->execute([$email]);
@@ -34,15 +36,33 @@ include '../includes/header_benevole.php';
     </p>
     <table class="rh-table">
         <thead>
-            <tr><th>المشروع</th><th>المبلغ</th><th>طريقة الأداء</th><th>التاريخ</th></tr>
+            <tr><th>المشروع</th><th>المبلغ</th><th>طريقة الأداء</th><th>التاريخ</th><th>تقدم هذا الإصدار</th></tr>
         </thead>
         <tbody>
         <?php foreach ($dons as $d): ?>
             <tr>
-                <td><a href="../public/projet_detail.php?id=<?= $d['projet_id'] ?>" target="_blank"><?= htmlspecialchars($d['titre']) ?></a></td>
+                <td>
+                    <?php if ($d['numero_edition']): ?>
+                        <a href="../public/projet_detail.php?id=<?= $d['projet_id'] ?>#edition-<?= $d['numero_edition'] ?>" target="_blank">
+                            <?= htmlspecialchars($d['titre']) ?> — إصدار #<?= $d['numero_edition'] ?>
+                        </a>
+                    <?php else: ?>
+                        <a href="../public/projet_detail.php?id=<?= $d['projet_id'] ?>" target="_blank"><?= htmlspecialchars($d['titre']) ?></a>
+                    <?php endif; ?>
+                </td>
                 <td><?= number_format($d['montant'], 2) ?> د.م.</td>
                 <td><?= htmlspecialchars($d['mode_paiement']) ?></td>
                 <td><?= htmlspecialchars($d['date_don']) ?></td>
+                <td>
+                    <?php if ($d['numero_edition'] && $d['budget_prevu'] > 0):
+                        $pctDon = min(100, round(($d['budget_collecte'] / $d['budget_prevu']) * 100));
+                    ?>
+                        <div class="project-progress" style="width:100px;"><div class="project-progress-fill" style="width:<?= $pctDon ?>%;"></div></div>
+                        <small><?= $pctDon ?>%</small>
+                    <?php else: ?>
+                        <span style="color:#999;">-</span>
+                    <?php endif; ?>
+                </td>
             </tr>
         <?php endforeach; ?>
         </tbody>

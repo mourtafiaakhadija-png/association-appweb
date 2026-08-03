@@ -140,7 +140,7 @@ Le projet est découpé en **7 sprints** sur une durée d'un mois, complétés p
 | — | Système de comités et appels à bénévoles | ✅ |
 | — | Traduction arabe de l'espace admin + refonte visuelle (admin, bénévole, public) | ✅ |
 | — | Tableau de bord admin avec statistiques et graphiques | ✅ |
-| Sprint 7 | Tests, sécurisation finale, déploiement | ⏳ en cours |
+| Sprint 7 | Tests, sécurisation finale, déploiement  | ✅ |
 
 ---
 
@@ -153,6 +153,24 @@ Le projet est découpé en **7 sprints** sur une durée d'un mois, complétés p
 | `#F0B429` (doré) | Couleur de mise en valeur (progression, chiffres clés, page active) |
 
 Typographies : **Cairo** (titres) et **Tajawal** (texte courant). Les trois espaces (admin, bénévole, public) sont désormais entièrement en arabe (RTL) avec une identité visuelle cohérente (headers en dégradé bleu, pages de connexion en verre dépoli).
+
+---
+## Dernières améliorations
+
+Les dernières évolutions apportées au projet comprennent :
+
+* Finalisation du Sprint 7 (tests fonctionnels, validation et corrections).
+* Mise en place d'une protection **CSRF** sur l'ensemble des formulaires sensibles de plateforme
+* Intégration d'un système de limitation des tentatives de connexion (protection contre les attaques par force brute après plusieurs échecs).
+* Renforcement global de la sécurité des formulaires et de l'authentification.
+* Ajout de nouvelles catégories de bénéficiaires pour les projets :
+
+  * Malades
+  * Hafaza Al-Quran
+  * Veuves
+* Mise à jour des interfaces d'administration et de l'espace public pour prendre en charge ces nouvelles catégories.
+* Mise à jour du système de traduction (`i18n_admin.php`) afin de conserver une cohérence complète entre les différents espaces de l'application.
+* Corrections de bugs, améliorations de stabilité et optimisation générale du projet avant livraison.
 
 ---
 

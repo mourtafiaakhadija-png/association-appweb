@@ -242,3 +242,25 @@
     display: block; 
     margin-top: 0.4rem; 
 }
+.container{
+    display: flex;
+    gap: 27px;
+}
+.btn_adminprojet{
+    padding: 4px 20px;
+    margin-top: 10px;
+    background-color: #305dbd;
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    font-size: 20px;
+   
+}
+.btn_adminprojet a{
+    font-size: 10px;
+    text-decoration: none;
+}
+.btn_adminprojet:hover{
+    background-color: #0c2a6b;
+    cursor: pointer;
+}

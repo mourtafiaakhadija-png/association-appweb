@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 require_once '../includes/auth_check_benevole.php';
 require_once '../config/db.php';
 
@@ -9,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: appels_benevoles.php');
     exit;
 }
+verifierJetonCsrf();
 
 $editionId = (int) ($_POST['edition_id'] ?? 0);
 

@@ -343,3 +343,30 @@ body {
 @media (max-width: 900px) {
     .admin-charts-grid { grid-template-columns: 1fr; }
 }
+.link-button {
+    background: none; 
+    border: none; 
+    padding: 0; 
+    margin: 0 0.3rem;
+    color: #1E3E8C; 
+    text-decoration: underline; 
+    cursor: pointer; 
+    font-size: inherit; 
+    font-family: inherit;
+}
+.admin-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #1E3E8C;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    margin-bottom: 1.2rem;
+    transition: background 0.2s;
+}
+.admin-back-btn:hover { background: #f4f5f7; }

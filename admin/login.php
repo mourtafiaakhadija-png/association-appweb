@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/login_throttle.php';
 require_once '../config/db.php';
 
 if (isset($_SESSION['user_id'])) {
@@ -16,20 +17,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($email === '' || $password === '') {
         $error = "يرجى ملء جميع الحقول.";
     } else {
-        $stmt = $pdo->prepare("SELECT id, nom, prenom, email, password, role FROM users WHERE email = ? AND role = 'admin'");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch();
-
-        if ($user && password_verify($password, $user['password'])) {
-            session_regenerate_id(true);
-            $_SESSION['user_id']     = $user['id'];
-            $_SESSION['user_nom']    = $user['nom'];
-            $_SESSION['user_prenom'] = $user['prenom'];
-            $_SESSION['user_role']   = $user['role'];
-            header('Location: index.php');
-            exit;
+        $minutesRestantes = estBloque($pdo, $email);
+        if ($minutesRestantes > 0) {
+            $error = "تم حظر هذا الحساب مؤقتا بسبب عدة محاولات فاشلة. حاولوا مجددا بعد $minutesRestantes دقيقة.";
         } else {
-            $error = "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+            $stmt = $pdo->prepare("SELECT id, nom, prenom, email, password, role FROM users WHERE email = ? AND role = 'admin'");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+
+            if ($user && password_verify($password, $user['password'])) {
+                reinitialiserTentatives($pdo, $email);
+                session_regenerate_id(true);
+                $_SESSION['user_id']     = $user['id'];
+                $_SESSION['user_nom']    = $user['nom'];
+                $_SESSION['user_prenom'] = $user['prenom'];
+                $_SESSION['user_role']   = $user['role'];
+                header('Location: index.php');
+                exit;
+            } else {
+                enregistrerEchec($pdo, $email);
+                $error = "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+            }
         }
     }
 }

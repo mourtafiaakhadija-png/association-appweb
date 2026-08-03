@@ -1,8 +1,10 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
+
 
 $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
 $isEdit = $id !== null;
@@ -32,7 +34,7 @@ include '../includes/header.php';
 
 <form method="POST" action="projet_action.php" class="projet-form">
     <?php if ($isEdit): ?><input type="hidden" name="id" value="<?= $data['id'] ?>"><?php endif; ?>
-
+    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
     <label>اسم المشروع</label>
     <input type="text" name="titre" value="<?= htmlspecialchars($data['titre']) ?>" required placeholder="Ex: كفالة اليتيم">
 
@@ -65,10 +67,13 @@ include '../includes/header.php';
         <div>
             <label>نوع الفئة المستهدفة</label>
             <select name="cible_type" required>
-                <option value="الأسرة" <?= $data['cible_type'] === 'famille' ? 'selected' : '' ?>>الأسرة</option>
-                <option value="القرية" <?= $data['cible_type'] === 'village' ? 'selected' : '' ?>>القرية</option>
-                <option value="المدرسة" <?= $data['cible_type'] === 'ecole' ? 'selected' : '' ?>>المدرسة</option>
-                <option value="اليتيم" <?= $data['cible_type'] === 'orphelin' ? 'selected' : '' ?>>اليتيم</option>
+                <option value="famille" <?= $data['cible_type'] === 'famille' ? 'selected' : '' ?>>الأسرة</option>
+                <option value="village" <?= $data['cible_type'] === 'village' ? 'selected' : '' ?>>القرية</option>
+                <option value="ecole" <?= $data['cible_type'] === 'ecole' ? 'selected' : '' ?>>المدرسة</option>
+                <option value="orphelin" <?= $data['cible_type'] === 'orphelin' ? 'selected' : '' ?>>اليتيم</option>
+                <option value="malades" <?= $data['cible_type'] === 'malades' ? 'selected' : '' ?>>المرضى</option>
+                <option value="hafaza_quran" <?= $data['cible_type'] === 'hafaza_quran' ? 'selected' : '' ?>>حفظة القرآن</option>
+                <option value="veuves" <?= $data['cible_type'] === 'veuves' ? 'selected' : '' ?>>الأرامل</option>
             </select>
         </div>
         <div>
@@ -79,9 +84,9 @@ include '../includes/header.php';
 
     <label>الحالة العامة للمشروع</label>
     <select name="statut" required>
-        <option value="مستمر" <?= $data['statut'] === 'en_cours' ? 'selected' : '' ?>>مستمر</option>
-        <option value="انتهى" <?= $data['statut'] === 'termine' ? 'selected' : '' ?>>انتهى(الحمدلله)</option>
-        <option value="معلق" <?= $data['statut'] === 'suspendu' ? 'selected' : '' ?>>معلق</option>
+        <option value="en_cours" <?= $data['statut'] === 'en_cours' ? 'selected' : '' ?>>مستمر</option>
+        <option value="termine" <?= $data['statut'] === 'termine' ? 'selected' : '' ?>>انتهى (الحمد لله)</option>
+        <option value="suspendu" <?= $data['statut'] === 'suspendu' ? 'selected' : '' ?>>معلق</option>
     </select>
 
     <button type="submit"><?= $isEdit ? 'حفظ التعديلات' : 'إنشاء المشروع' ?></button>

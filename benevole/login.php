@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/login_throttle.php';
 require_once '../config/db.php';
 
 if (isset($_SESSION['benevole_id'])) {
@@ -13,18 +14,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $motDePasse = $_POST['password'] ?? '';
 
-    $stmt = $pdo->prepare("SELECT id, nom, prenom, email, password, role FROM users WHERE email = ? AND role = 'benevole'");
-    $stmt->execute([$email]);
-    $user = $stmt->fetch();
-
-    if ($user && password_verify($motDePasse, $user['password'])) {
-        $_SESSION['benevole_id'] = $user['id'];
-        $_SESSION['benevole_nom'] = $user['nom'];
-        $_SESSION['benevole_prenom'] = $user['prenom'];
-        header('Location: index.php');
-        exit;
+    $minutesRestantes = estBloque($pdo, $email);
+    if ($minutesRestantes > 0) {
+        $erreur = "تم حظر هذا الحساب مؤقتا. حاولوا مجددا بعد $minutesRestantes دقيقة.";
     } else {
-        $erreur = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+        $stmt = $pdo->prepare("SELECT id, nom, prenom, email, password, role FROM users WHERE email = ? AND role = 'benevole'");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+
+        if ($user && password_verify($motDePasse, $user['password'])) {
+            reinitialiserTentatives($pdo, $email);
+            $_SESSION['benevole_id'] = $user['id'];
+            $_SESSION['benevole_nom'] = $user['nom'];
+            $_SESSION['benevole_prenom'] = $user['prenom'];
+            header('Location: index.php');
+            exit;
+        } else {
+            enregistrerEchec($pdo, $email);
+            $erreur = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+        }
     }
 }
 ?>

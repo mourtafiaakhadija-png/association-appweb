@@ -25,6 +25,17 @@ $stmt = $pdo->prepare(
 );
 $stmt->execute([$benevoleId]);
 $projets = $stmt->fetchAll();
+// Projets où ce bénévole est membre CONFIRMÉ du comité (mais pas forcément responsable)
+$stmt = $pdo->prepare(
+    "SELECT DISTINCT p.id, p.titre, e.numero_edition, e.statut AS edition_statut
+     FROM participations_comite pc
+     JOIN projet_editions e ON e.id = pc.edition_id
+     JOIN projets p ON p.id = e.projet_id
+     WHERE pc.user_id = ? AND pc.statut = 'confirme' AND p.responsable_id != ?
+     ORDER BY p.titre"
+);
+$stmt->execute([$benevoleId, $benevoleId]);
+$projetsComite = $stmt->fetchAll();
 
 include '../includes/header_benevole.php';
 ?>
@@ -57,5 +68,16 @@ include '../includes/header_benevole.php';
         <p class="info-note">لست مسؤولا عن أي مشروع حاليا. تواصل مع الإدارة إذا كان هذا خطأ.</p>
     <?php endif; ?>
 </div>
-
+<?php if (!empty($projetsComite)): ?>
+<h2 style="margin-top:2.5rem;">المشاريع التي أنا عضو مؤكد في لجنتها</h2>
+<div class="benevole-projets-grid">
+    <?php foreach ($projetsComite as $pc): ?>
+        <div class="benevole-projet-card">
+            <h3><?= htmlspecialchars($pc['titre']) ?></h3>
+            <span class="badge badge-<?= $pc['edition_statut'] ?>">الإصدار #<?= $pc['numero_edition'] ?></span>
+            <a href="../public/projet_detail.php?id=<?= $pc['id'] ?>" target="_blank" class="btn-add">👁 عرض المشروع</a>
+        </div>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
 <?php include '../includes/footer_benevole.php'; ?>

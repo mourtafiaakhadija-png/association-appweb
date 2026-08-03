@@ -1,12 +1,17 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
+require_once '../includes/error_handler.php';
 require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
 require_once '../includes/mailer.php';
 
-$id = (int) ($_GET['id'] ?? 0);
-$action = $_GET['action'] ?? '';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') { header('Location: candidatures.php'); exit; }
+verifierJetonCsrf();
+$id = (int) ($_POST['id'] ?? 0);
+$action = $_POST['action'] ?? '';
 
 if ($id <= 0 || !in_array($action, ['accepter', 'rejeter'])) {
     header('Location: candidatures.php');
@@ -93,6 +98,6 @@ try {
     exit;
 
 } catch (Exception $e) {
-    if ($pdo->inTransaction()) $pdo->rollBack();
-    die("Erreur : " . htmlspecialchars($e->getMessage()));
+    if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
+    gererErreur($e, "حدث خطأ أثناء العملية. يرجى المحاولة مرة أخرى أو التواصل مع الإدارة.");
 }

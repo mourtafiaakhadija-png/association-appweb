@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
@@ -7,9 +8,10 @@ require_once '../config/db.php';
 $tab = $_GET['tab'] ?? 'bureau';
 
 // Suppression (depuis les liens "Supprimer")
-if (isset($_GET['delete']) && isset($_GET['type'])) {
-    $id = (int) $_GET['delete'];
-    if ($_GET['type'] === 'bureau') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete']) && isset($_POST['type'])) {
+    verifierJetonCsrf();
+    $id = (int) $_POST['delete'];
+    if ($_POST['type'] === 'bureau') {
         // On récupère le user_id lié pour supprimer aussi le compte user
         $stmt = $pdo->prepare("SELECT user_id FROM bureau_membres WHERE id = ?");
         $stmt->execute([$id]);
@@ -18,7 +20,7 @@ if (isset($_GET['delete']) && isset($_GET['type'])) {
             $pdo->prepare("DELETE FROM users WHERE id = ?")->execute([$row['user_id']]);
             // bureau_membres est supprimé automatiquement via ON DELETE CASCADE
         }
-    } elseif ($_GET['type'] === 'collaborateur') {
+    } elseif ($_POST['type'] === 'collaborateur') {
         $pdo->prepare("DELETE FROM collaborateurs WHERE id = ?")->execute([$id]);
     }
     header('Location: rh.php?tab=' . urlencode($tab));
@@ -71,7 +73,12 @@ include '../includes/header.php';
                 <td><?= htmlspecialchars($m['email']) ?></td>
                 <td>
                     <a href="rh_form.php?type=bureau&id=<?= $m['id'] ?>">تعديل</a> |
-                    <a href="rh.php?delete=<?= $m['id'] ?>&type=bureau" onclick="return confirm('Supprimer ce membre ?');">حذف</a>
+                    <form method="POST" style="display:inline;" onsubmit="return confirm('Supprimer ce membre ?');">
+                        <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                        <input type="hidden" name="delete" value="<?= $m['id'] ?>">
+                        <input type="hidden" name="type" value="bureau">
+                        <button type="submit" class="link-button">حذف</button>
+                    </form>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -126,7 +133,12 @@ include '../includes/header.php';
                 <td><?= htmlspecialchars($c['description'] ?? '-') ?></td>
                 <td>
                     <a href="rh_form.php?type=collaborateur&id=<?= $c['id'] ?>">تعديل</a> |
-                    <a href="rh.php?delete=<?= $c['id'] ?>&type=collaborateur" onclick="return confirm('Supprimer ce collaborateur ?');">حذف</a>
+                    <form method="POST" style="display:inline;" onsubmit="return confirm('Supprimer ce collaborateur ?');">
+                        <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                        <input type="hidden" name="delete" value="<?= $c['id'] ?>">
+                        <input type="hidden" name="type" value="collaborateur">
+                        <button type="submit" class="link-button">حذف</button>
+                    </form>
                 </td>
             </tr>
         <?php endforeach; ?>

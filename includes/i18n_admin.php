@@ -35,10 +35,13 @@ $GLOBALS['labels'] = [
     ],
 
     'cible_type' => [
-        'famille'  => 'أسرة',
-        'village'  => 'قرية',
-        'ecole'    => 'مدرسة',
-        'orphelin' => 'يتيم',
+        'famille'      => 'أسرة',
+        'village'      => 'قرية',
+        'ecole'        => 'مدرسة',
+        'orphelin'     => 'يتيم',
+        'malades'      => 'مرضى',
+        'hafaza_quran' => 'حفظة القرآن',
+        'veuves'       => 'أرامل',
     ],
 
 ];

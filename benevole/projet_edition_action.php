@@ -1,5 +1,7 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
+require_once '../includes/error_handler.php';
 require_once '../includes/auth_check_benevole.php';
 require_once '../config/db.php';
 require_once '../includes/upload_helper.php';
@@ -7,9 +9,10 @@ require_once '../includes/upload_helper.php';
 $benevoleId = $_SESSION['benevole_id'];
 
 // --- Suppression d'une photo ---
-if (isset($_GET['delete_photo'])) {
-    $photoId = (int) $_GET['delete_photo'];
-    $editionId = (int) $_GET['edition_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_photo'])) {
+    verifierJetonCsrf();
+    $photoId = (int) $_POST['delete_photo'];
+    $editionId = (int) $_POST['edition_id'];
 
     // Vérifie que cette photo appartient bien à une édition d'un projet dont ce bénévole est responsable
     $check = $pdo->prepare(
@@ -30,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php');
     exit;
 }
+verifierJetonCsrf();
 
 $id = isset($_POST['id']) ? (int) $_POST['id'] : null;
 $isEdit = $id !== null;
@@ -107,6 +111,6 @@ try {
     exit;
 
 } catch (Exception $e) {
-    $pdo->rollBack();
-    die("خطأ: " . htmlspecialchars($e->getMessage()));
+    if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
+    gererErreur($e, "حدث خطأ أثناء العملية. يرجى المحاولة مرة أخرى أو التواصل مع الإدارة.");
 }

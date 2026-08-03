@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 require_once '../includes/auth_check_benevole.php';
 require_once '../includes/i18n_admin.php';
 require_once '../config/db.php';
@@ -18,8 +19,9 @@ if (!$projet) {
 }
 
 // Envoyer une édition (brouillon) pour validation
-if (isset($_GET['soumettre'])) {
-    $editionId = (int) $_GET['soumettre'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['soumettre'])) {
+    verifierJetonCsrf();
+    $editionId = (int) $_POST['soumettre'];
     $pdo->prepare(
         "UPDATE projet_editions SET statut = 'en_attente_validation' 
          WHERE id = ? AND projet_id = ? AND statut IN ('brouillon', 'a_corriger')"
@@ -29,10 +31,11 @@ if (isset($_GET['soumettre'])) {
 }
 
 // Suppression d'un brouillon (uniquement s'il n'a pas encore été envoyé)
-if (isset($_GET['delete'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
+    verifierJetonCsrf();
     $pdo->prepare(
         "DELETE FROM projet_editions WHERE id = ? AND projet_id = ? AND statut = 'brouillon'"
-    )->execute([(int) $_GET['delete'], $projetId]);
+    )->execute([(int) $_POST['delete'], $projetId]);
     header('Location: projet_editions.php?projet_id=' . $projetId);
     exit;
 }
@@ -61,15 +64,25 @@ include '../includes/header_benevole.php';
             <td>
                 <span class="badge badge-<?= $e['statut'] ?>"><?= label('statut_edition', $e['statut']) ?></span>
                 <?php if ($e['statut'] === 'a_corriger' && $e['commentaire_admin']): ?>
-                    <p class="error" style="margin-top:0.4rem;">⚠️ <?= htmlspecialchars($e['commentaire_admin']) ?></p>
+                    <p class="error" style="margin-top:0.4rem;"><i class="fa-solid fa-triangle-exclamation"></i> <?= htmlspecialchars($e['commentaire_admin']) ?></p>
                 <?php endif; ?>
             </td>
             <td>
                 <?php if (in_array($e['statut'], ['brouillon', 'a_corriger'])): ?>
                     <a href="projet_edition_form.php?id=<?= $e['id'] ?>">تعديل</a> |
-                    <a href="?projet_id=<?= $projetId ?>&soumettre=<?= $e['id'] ?>" onclick="return confirm('إرسال هذا الإصدار للإدارة للمصادقة عليه؟');">إرسال للمصادقة</a>
+                    <form method="POST" style="display:inline;" onsubmit="return confirm('إرسال هذا الإصدار للإدارة للمصادقة عليه؟');">
+                        <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                        <input type="hidden" name="projet_id" value="<?= $projetId ?>">
+                        <input type="hidden" name="soumettre" value="<?= $e['id'] ?>">
+                        <button type="submit" class="link-button">إرسال للمصادقة</button>
+                    </form>
                     <?php if ($e['statut'] === 'brouillon'): ?>
-                        | <a href="?projet_id=<?= $projetId ?>&delete=<?= $e['id'] ?>" onclick="return confirm('حذف هذه المسودة؟');">حذف</a>
+                        <form method="POST" style="display:inline;" onsubmit="return confirm('حذف هذه المسودة؟');">
+                            <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                            <input type="hidden" name="projet_id" value="<?= $projetId ?>">
+                            <input type="hidden" name="delete" value="<?= $e['id'] ?>">
+                            <button type="submit" class="link-button">حذف</button>
+                        </form>
                     <?php endif; ?>
                 <?php elseif ($e['statut'] === 'en_attente_validation'): ?>
                     <em>في انتظار مراجعة الإدارة</em>

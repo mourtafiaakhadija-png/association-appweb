@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
@@ -55,17 +56,27 @@ include '../includes/header.php';
             <td style="max-width:280px;"><?= nl2br(htmlspecialchars($c['motivation'])) ?></td>
             <td>
                 <?php if ($c['statut'] === 'en_attente'): ?>
-                    ⏳ قيد الانتظار
+                    <i class="fa-solid fa-hourglass-start"></i> قيد الانتظار
                 <?php elseif ($c['statut'] === 'acceptee'): ?>
-                    ✅ مقبولة
+                    <i class="fa-solid fa-circle-check"></i> مقبولة
                 <?php else: ?>
-                    ❌ مرفوضة
+                    <i class="fa-solid fa-circle-xmark"></i> مرفوضة
                 <?php endif; ?>
             </td>
             <td>
                 <?php if ($c['statut'] === 'en_attente'): ?>
-                    <a href="candidature_action.php?id=<?= $c['id'] ?>&action=accepter" onclick="return confirm('Accepter cette candidature et créer un compte bénévole ?');">قبول</a> |
-                    <a href="candidature_action.php?id=<?= $c['id'] ?>&action=rejeter" onclick="return confirm('Rejeter cette candidature ?');">رفض</a>
+                    <form method="POST" action="candidature_action.php" style="display:inline;" onsubmit="return confirm('...');">
+                        <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                        <input type="hidden" name="id" value="<?= $c['id'] ?>">
+                        <input type="hidden" name="action" value="accepter">
+                        <button type="submit" class="link-button">قبول</button>
+                    </form> |
+                    <form method="POST" action="candidature_action.php" style="display:inline;" onsubmit="return confirm('Rejeter cette candidature ?');">
+                        <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                        <input type="hidden" name="id" value="<?= $c['id'] ?>">
+                        <input type="hidden" name="action" value="rejeter">
+                        <button type="submit" class="link-button">رفض</button>
+                    </form>
                 <?php else: ?>
                     <small>تم الرد بتاريخ <?= htmlspecialchars($c['date_reponse']) ?></small>
                 <?php endif; ?>

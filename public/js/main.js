@@ -1,4 +1,3 @@
-document.documentElement.classList.add('js-ready');
 
 document.addEventListener('DOMContentLoaded', function () {
     // Navbar transparente -> pleine au scroll
@@ -43,32 +42,5 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Animation d'entrée du texte du hero
-    const heroInner = document.querySelector('.hero-inner');
-    if (heroInner) {
-        setTimeout(function () {
-            heroInner.classList.add('revealed');
-        }, 100);
-    }
 
-    // Apparition progressive des cartes projets au scroll
-    const revealCards = document.querySelectorAll('.project-card');
-    if (revealCards.length && 'IntersectionObserver' in window) {
-        const observer = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry, index) {
-                if (entry.isIntersecting) {
-                    setTimeout(function () {
-                        entry.target.classList.add('revealed');
-                    }, index * 100);
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15 });
-
-        revealCards.forEach(function (card) {
-            observer.observe(card);
-        });
-    } else {
-        revealCards.forEach(function (card) { card.classList.add('revealed'); });
-    }
 });

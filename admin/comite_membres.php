@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
@@ -14,15 +15,17 @@ $edition = $stmtEdition->fetch();
 if (!$edition) die("الإصدار غير موجود.");
 
 // Confirmer / retirer un membre
-if (isset($_GET['confirmer'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmer'])) {
+    verifierJetonCsrf();
     $pdo->prepare("UPDATE participations_comite SET statut = 'confirme' WHERE id = ? AND edition_id = ?")
-        ->execute([(int) $_GET['confirmer'], $editionId]);
+        ->execute([(int) $_POST['confirmer'], $editionId]);
     header('Location: comite_membres.php?edition_id=' . $editionId);
     exit;
 }
-if (isset($_GET['retirer'])) {
-    $pdo->prepare("DELETE FROM participations_comite WHERE id = ? AND edition_id = ?")
-        ->execute([(int) $_GET['retirer'], $editionId]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['retirer'])) {
+    verifierJetonCsrf();
+    $pdo->prepare("UPDATE participations_comite SET statut = 'non_retenu' WHERE id = ? AND edition_id = ?")
+        ->execute([(int) $_POST['retirer'], $editionId]);
     header('Location: comite_membres.php?edition_id=' . $editionId);
     exit;
 }
@@ -55,16 +58,26 @@ include '../includes/header.php';
             <td><?= htmlspecialchars($m['telephone'] ?: '-') ?></td>
             <td>
                 <?php if ($m['statut'] === 'confirme'): ?>
-                    <span class="badge badge-validee">✅ مؤكد</span>
+                    <span class="badge badge-validee"><i class="fa-regular fa-circle-check"></i> مؤكد</span>
                 <?php else: ?>
-                    <span class="badge badge-en_attente_validation">⏳ متوفر</span>
+                    <span class="badge badge-en_attente_validation"><i class="fa-solid fa-hourglass-start"></i> متوفر</span>
                 <?php endif; ?>
             </td>
             <td>
                 <?php if ($m['statut'] !== 'confirme'): ?>
-                    <a href="?edition_id=<?= $editionId ?>&confirmer=<?= $m['id'] ?>">تأكيد</a> |
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                        <input type="hidden" name="edition_id" value="<?= $editionId ?>">
+                        <input type="hidden" name="confirmer" value="<?= $m['id'] ?>">
+                        <button type="submit" class="link-button">تأكيد</button>
+                    </form>
                 <?php endif; ?>
-                <a href="?edition_id=<?= $editionId ?>&retirer=<?= $m['id'] ?>" onclick="return confirm('إزالة هذا العضو من اللائحة؟');">إزالة</a>
+                <form method="POST" style="display:inline;" onsubmit="return confirm('إزالة هذا العضو من اللائحة؟');">
+                    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                    <input type="hidden" name="edition_id" value="<?= $editionId ?>">
+                    <input type="hidden" name="retirer" value="<?= $m['id'] ?>">
+                    <button type="submit" class="link-button">إزالة</button>
+                </form>
             </td>
         </tr>
     <?php endforeach; ?>

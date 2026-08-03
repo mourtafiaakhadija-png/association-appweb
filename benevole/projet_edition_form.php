@@ -1,5 +1,7 @@
 <?php
 session_start();
+require_once '../includes/i18n_admin.php';
+require_once '../includes/csrf.php';
 require_once '../includes/auth_check_benevole.php';
 require_once '../config/db.php';
 
@@ -56,8 +58,8 @@ include '../includes/header_benevole.php';
     <p class="info-note">تمت المصادقة على هذا الإصدار وهو منشور. لا يمكنك تعديل محتواه، لكن يمكنك إضافة أو تغيير ملف الرابور أسفله.</p>
 <?php endif; ?>
 
-<form method="POST" action="projet_edition_action.php" enctype="multipart/form-data" class="projet-form">
-    <input type="hidden" name="projet_id" value="<?= $projetId ?>">
+<form method="POST" action="projet_edition_action.php" enctype="multipart/form-data" class="projet-form" id="editionForm">
+    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
     <?php if ($isEdit): ?><input type="hidden" name="id" value="<?= $data['id'] ?>"><?php endif; ?>
 
     <?php if ($modifiable): ?>
@@ -87,27 +89,31 @@ include '../includes/header_benevole.php';
 
         <label>إضافة صور</label>
         <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple>
-
-        <?php if ($isEdit && !empty($photos)): ?>
-            <div class="existing-photos">
-                <?php foreach ($photos as $ph): ?>
-                    <div class="existing-photo">
-                        <img src="../uploads/<?= htmlspecialchars($ph['url']) ?>">
-                        <a href="projet_edition_action.php?delete_photo=<?= $ph['id'] ?>&edition_id=<?= $id ?>" onclick="return confirm('حذف هذه الصورة؟');">✕</a>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-    <?php endif; ?>
-
-    <label>ملف الرابور (Word أو PDF)</label>
-    <?php if ($isEdit && $data['fichier_rapport']): ?>
-        <p class="info-note"><i class="fa-solid fa-file-lines"></i> ملف حالي: <a href="../uploads/<?= htmlspecialchars($data['fichier_rapport']) ?>" target="_blank">تحميل</a></p>
-    <?php endif; ?>
-    <input type="file" name="rapport" accept=".pdf,.doc,.docx">
-
-    <button type="submit">حفظ</button>
-    <a href="projet_editions.php?projet_id=<?= $projetId ?>" class="btn-cancel">إلغاء</a>
 </form>
+<?php if ($isEdit && !empty($photos)): ?>
+    <div class="existing-photos">
+        <?php foreach ($photos as $ph): ?>
+            <div class="existing-photo">
+                <img src="../uploads/<?= htmlspecialchars($ph['url']) ?>">
+                <form method="POST" action="projet_edition_action.php" style="display:inline;" onsubmit="return confirm('حذف هذه الصورة؟');">
+                    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                    <input type="hidden" name="delete_photo" value="<?= $ph['id'] ?>">
+                    <input type="hidden" name="edition_id" value="<?= $id ?>">
+                    <button type="submit" class="link-button">✕</button>
+                </form>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
+<?php endif; ?>
+
+<label>ملف الرابور (Word أو PDF)</label>
+<?php if ($isEdit && $data['fichier_rapport']): ?>
+    <p class="info-note"><i class="fa-solid fa-file-lines"></i> ملف حالي: <a href="../uploads/<?= htmlspecialchars($data['fichier_rapport']) ?>" target="_blank">تحميل</a></p>
+<?php endif; ?>
+<input type="file" name="rapport" accept=".pdf,.doc,.docx">
+
+<button type="submit" form="editionForm">حفظ</button>
+<a href="projet_editions.php?projet_id=<?= $projetId ?>" class="btn-cancel">إلغاء</a>
 
 <?php include '../includes/footer_benevole.php'; ?>

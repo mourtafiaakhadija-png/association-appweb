@@ -141,3 +141,18 @@
     color: var(--gold); 
     font-size: 1.1rem; 
 }
+.don-item-link { 
+    text-decoration: none; 
+    color: inherit; 
+}
+.don-item-link:hover strong { 
+    color: var(--blue-dark); 
+}
+.don-tracking-progress { 
+    margin-top: 0.5rem; 
+    max-width: 260px; 
+}
+.don-tracking-progress small { 
+    color: var(--ink-soft); 
+    font-size: 0.78rem; 
+}

@@ -48,7 +48,10 @@ $stmt = $pdo->prepare("SELECT * FROM commentaires_projets WHERE projet_id = ? OR
 $stmt->execute([$id]);
 $commentaires = $stmt->fetchAll();
 
-$cibleLabels = ['famille' => 'عائلة', 'village' => 'قرية', 'ecole' => 'مدرسة', 'orphelin' => 'اليتيم'];
+$cibleLabels = [
+    'famille' => 'عائلة', 'village' => 'قرية', 'ecole' => 'مدرسة', 'orphelin' => 'اليتيم',
+    'malades' => 'مرضى', 'hafaza_quran' => 'حفظة القرآن', 'veuves' => 'أرامل',
+];
 $statutLabels = ['en_cours' => 'قيد التنفيذ', 'termine' => 'مكتمل', 'suspendu' => 'متوقف مؤقتا'];
 
 $pageTitle = $projet['titre'];
@@ -77,7 +80,7 @@ if ($editionActuelle && $editionActuelle['budget_prevu'] > 0) {
 
         <?php else: ?>
 
-        <div class="projet-detail-hero">
+        <div class="projet-detail-hero" id="edition-<?= $editionActuelle['numero_edition'] ?>">
             <div>
                 <?php if (!empty($photosActuelles)): ?>
                     <img src="../uploads/<?= htmlspecialchars($photosActuelles[0]['url']) ?>" class="projet-gallery-main" id="projetMainImage">
@@ -103,8 +106,8 @@ if ($editionActuelle && $editionActuelle['budget_prevu'] > 0) {
                 </div>
                 <div class="project-progress"><div class="project-progress-fill" style="width:<?= $pct ?>%;"></div></div>
                 <div class="project-progress-label">
-                    <?= number_format($p['budget_collecte'],0) ?> / <?= number_format($p['budget_prevu'],0) ?> د.م. (<?= $pct ?>%)
-                    <?php if ($p['budget_collecte'] > $p['budget_prevu']): ?>
+                    <?= number_format($editionActuelle['budget_collecte'],0) ?> / <?= number_format($editionActuelle['budget_prevu'],0) ?> د.م. (<?= $pct ?>%)
+                    <?php if ($editionActuelle['budget_collecte'] > $editionActuelle['budget_prevu']): ?>
                         <span class="badge-goal-reached">🎉 الهدف تحقق</span>
                     <?php endif; ?>
                 </div>
@@ -139,7 +142,7 @@ if ($editionActuelle && $editionActuelle['budget_prevu'] > 0) {
                     $photosEd = $photosParEdition[$ed['id']] ?? [];
                     $pctEd = $ed['budget_prevu'] > 0 ? min(100, round(($ed['budget_collecte'] / $ed['budget_prevu']) * 100)) : 0;
                 ?>
-                <div class="edition-timeline-item">
+                <div class="edition-timeline-item" id="edition-<?= $ed['numero_edition'] ?>">
                     <?php if (!empty($photosEd)): ?>
                         <img src="../uploads/<?= htmlspecialchars($photosEd[0]['url']) ?>" class="edition-timeline-photo">
                     <?php else: ?>

@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
@@ -14,6 +15,7 @@ if (!$projet) die("Projet introuvable.");
 
 // Renvoyer une édition pour correction (avec commentaire)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['renvoyer_edition_id'])) {
+    verifierJetonCsrf();
     $editionId = (int) $_POST['renvoyer_edition_id'];
     $commentaire = trim($_POST['commentaire_admin']);
     $pdo->prepare(
@@ -24,8 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['renvoyer_edition_id']
 }
 
 // Suppression d'une édition
-if (isset($_GET['delete'])) {
-    $pdo->prepare("DELETE FROM projet_editions WHERE id = ? AND projet_id = ?")->execute([(int) $_GET['delete'], $projetId]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_edition'])) {
+    verifierJetonCsrf();
+    $pdo->prepare("DELETE FROM projet_editions WHERE id = ? AND projet_id = ?")->execute([(int) $_POST['delete_edition'], $projetId]);
     header('Location: projet_editions.php?projet_id=' . $projetId);
     exit;
 }
@@ -45,6 +48,8 @@ include '../includes/header.php';
 ?>
 
 <h2>الإصدارات — <?= htmlspecialchars($projet['titre']) ?></h2>
+<h3 style="margin-top:1.5rem;">تطور المشروع عبر الإصدارات (الميزانية والمتبرعون)</h3>
+<img src="projet_evolution_chart.php?projet_id=<?= $projetId ?>" alt="مخطط تطور المشروع" style="max-width:100%; border-radius:10px; box-shadow:0 4px 20px rgba(18,39,92,0.08); margin-bottom:1.5rem;">
 <p><a href="projet_form.php?id=<?= $projetId ?>">← العودة إلى بطاقة المشروع</a></p>
 
 <a class="btn-add" href="projet_edition_form.php?projet_id=<?= $projetId ?>">+ إصدار جديد</a>
@@ -66,11 +71,16 @@ include '../includes/header.php';
                 <?php if ($e['statut'] === 'en_attente_validation'): ?>
                     <a href="#" onclick="document.getElementById('renvoi-<?= $e['id'] ?>').style.display='block'; return false;">إعادة للتصحيح</a> |
                 <?php endif; ?>
-                <a href="?projet_id=<?= $projetId ?>&delete=<?= $e['id'] ?>" onclick="return confirm('Supprimer cette édition et ses photos ?');">حذف</a>
+                <form method="POST" style="display:inline;" onsubmit="return confirm('Supprimer cette édition et ses photos ?');">
+                    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                    <input type="hidden" name="projet_id" value="<?= $projetId ?>">
+                    <input type="hidden" name="delete_edition" value="<?= $e['id'] ?>">
+                    <button type="submit" class="link-button">حذف</button>
+                </form>
 
                 <?php if ($e['statut'] === 'en_attente_validation'): ?>
                 <form method="POST" id="renvoi-<?= $e['id'] ?>" style="display:none; margin-top:0.5rem;">
-                    <input type="hidden" name="renvoyer_edition_id" value="<?= $e['id'] ?>">
+                    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
                     <textarea name="commentaire_admin" rows="2" placeholder="ما الذي يجب تصحيحه ?" required style="width:100%;"></textarea>
                     <button type="submit">إرسال</button>
                 </form>

@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 require_once '../includes/auth_check_benevole.php';
 require_once '../config/db.php';
 
@@ -37,10 +38,13 @@ include '../includes/header_benevole.php';
 
             <?php if ($a['ma_participation'] === 'confirme'): ?>
                 <span class="badge badge-validee"><i class="fa-solid fa-circle-check"></i> أنتم عضو مؤكد في هذا الفريق</span>
-            <?php elseif ($a['ma_participation'] === 'disponible'): ?>
-                <span class="badge badge-en_attente_validation">⏳ تم تسجيل توفركم، بانتظار تأكيد الإدارة</span>
+           <?php elseif ($a['ma_participation'] === 'disponible'): ?>
+                <span class="badge badge-en_attente_validation"><i class="fa-solid fa-hourglass-start"></i> تم تسجيل توفركم، بانتظار تأكيد الإدارة</span>
+            <?php elseif ($a['ma_participation'] === 'non_retenu'): ?>
+                <span class="badge" style="background:#6b7280;">لم يتم اختياركم لهذا الفريق هذا المرة، شكرا على تفاعلكم</span>
             <?php else: ?>
                 <form method="POST" action="appel_action.php">
+                    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
                     <input type="hidden" name="edition_id" value="<?= $a['edition_id'] ?>">
                     <button type="submit" class="btn-add"><i class="fa-solid fa-hand"></i> أنا متوفر لهذا المشروع</button>
                 </form>

@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
@@ -7,16 +8,18 @@ require_once '../config/db.php';
 $filtre = $_GET['filtre'] ?? 'tous';
 
 // Marquer comme traité / non traité (toggle, depuis les liens du tableau)
-if (isset($_GET['toggle'])) {
-    $id = (int) $_GET['toggle'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle'])) {
+    verifierJetonCsrf();
+    $id = (int) $_POST['toggle'];
     $pdo->prepare("UPDATE messages_contact SET traite = NOT traite WHERE id = ?")->execute([$id]);
     header('Location: messages.php?filtre=' . urlencode($filtre));
     exit;
 }
 
 // Suppression
-if (isset($_GET['delete'])) {
-    $id = (int) $_GET['delete'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
+    verifierJetonCsrf();
+    $id = (int) $_POST['delete'];
     $pdo->prepare("DELETE FROM messages_contact WHERE id = ?")->execute([$id]);
     header('Location: messages.php?filtre=' . urlencode($filtre));
     exit;
@@ -56,12 +59,20 @@ include '../includes/header.php';
             <td><?= htmlspecialchars($m['email']) ?></td>
             <td><?= htmlspecialchars($m['sujet'] ?: '-') ?></td>
             <td style="max-width:300px;"><?= nl2br(htmlspecialchars($m['message'])) ?></td>
-            <td><?= $m['traite'] ? '✅ تم المعالجة' : '⏳ قيد الانتظار' ?></td>
+            <td><?= $m['traite'] ? '<i class="fa-solid fa-circle-check"></i> تم المعالجة' : '<i class="fa-solid fa-hourglass-half"></i> قيد الانتظار' ?></td>
             <td>
-                <a href="?toggle=<?= $m['id'] ?>&filtre=<?= urlencode($filtre) ?>">
-                    <?= $m['traite'] ? 'Marquer non traité' : 'Marquer traité' ?>
-                </a> |
-                <a href="?delete=<?= $m['id'] ?>&filtre=<?= urlencode($filtre) ?>" onclick="return confirm('Supprimer ce message ?');">حذف</a>
+                <form method="POST" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                    <input type="hidden" name="filtre" value="<?= htmlspecialchars($filtre) ?>">
+                    <input type="hidden" name="toggle" value="<?= $m['id'] ?>">
+                    <button type="submit" class="link-button"><?= $m['traite'] ? 'Marquer non traité' : 'Marquer traité' ?></button>
+                </form>
+                <form method="POST" style="display:inline;" onsubmit="return confirm('Supprimer ce message ?');">
+                    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                    <input type="hidden" name="filtre" value="<?= htmlspecialchars($filtre) ?>">
+                    <input type="hidden" name="delete" value="<?= $m['id'] ?>">
+                    <button type="submit" class="link-button">حذف</button>
+                </form>
             </td>
         </tr>
     <?php endforeach; ?>

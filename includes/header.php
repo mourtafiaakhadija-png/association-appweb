@@ -39,3 +39,6 @@
     <?php endif; ?>
 </header>
 <main class="admin-content">
+<?php if (basename($_SERVER['PHP_SELF']) !== 'index.php'): ?>
+    <button onclick="history.back()" class="admin-back-btn"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+<?php endif; ?>

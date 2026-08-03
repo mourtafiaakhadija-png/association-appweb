@@ -1,14 +1,17 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
+require_once '../includes/error_handler.php';
 require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
 require_once '../includes/upload_helper.php';
 
 // --- Suppression d'une photo ---
-if (isset($_GET['delete_photo'])) {
-    $photoId = (int) $_GET['delete_photo'];
-    $editionId = (int) $_GET['edition_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_photo'])) {
+    verifierJetonCsrf();
+    $photoId = (int) $_POST['delete_photo'];
+    $editionId = (int) $_POST['edition_id'];
     $pdo->prepare("DELETE FROM photos_projets WHERE id = ?")->execute([$photoId]);
     header('Location: projet_edition_form.php?id=' . $editionId);
     exit;
@@ -19,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+verifierJetonCsrf();
 $id = isset($_POST['id']) ? (int) $_POST['id'] : null;
 $isEdit = $id !== null;
 $projetId = (int) $_POST['projet_id'];
@@ -89,6 +93,6 @@ try {
     exit;
 
 } catch (Exception $e) {
-    $pdo->rollBack();
-    die("Erreur : " . htmlspecialchars($e->getMessage()));
+    if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
+    gererErreur($e, "حدث خطأ أثناء العملية. يرجى المحاولة مرة أخرى أو التواصل مع الإدارة.");
 }

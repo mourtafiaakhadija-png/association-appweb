@@ -1,14 +1,4 @@
 <?php
-/**
- * includes/mailer.php
- *
- * Fonction d'envoi d'email via PHPMailer (installation manuelle, sans Composer).
- * Nécessite les 3 fichiers PHPMailer dans includes/PHPMailer/src/ :
- *   - PHPMailer.php
- *   - SMTP.php
- *   - Exception.php
- * (voir le guide d'installation fourni séparément)
- */
 
 require_once __DIR__ . '/PHPMailer/src/Exception.php';
 require_once __DIR__ . '/PHPMailer/src/PHPMailer.php';

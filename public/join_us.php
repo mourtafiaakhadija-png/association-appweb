@@ -7,7 +7,7 @@ include '../includes/header_public.php';
 
 <section class="page-hero orange">
     <div class="container">
-        <h1>انضم إلينا كمتطوع 🙌</h1>
+        <h1>انضم إلينا كمتطوع <i class="fa-solid fa-handshake" ></i></h1>
         <p>ساهم معنا في صنع الأمل، وقتك ومهاراتك يمكن أن تصنع التغيير</p>
     </div>
 </section>

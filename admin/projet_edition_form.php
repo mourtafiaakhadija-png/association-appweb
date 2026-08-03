@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
@@ -36,17 +37,18 @@ if ($isEdit) {
 include '../includes/header.php';
 ?>
 
-<h2><?= $isEdit ? 'Modifier l\'édition #' . $data['numero_edition'] : 'Nouvelle édition' ?> — <?= htmlspecialchars($projet['titre']) ?></h2>
+<h2><?= $isEdit ? 'تعديل الإصدار #' . $data['numero_edition'] : 'إصدار جديد' ?> — <?= htmlspecialchars($projet['titre']) ?></h2>
 
 <?php if ($isEdit && $data['fichier_rapport']): ?>
-    <p class="info-note">📄 التقرير المرسل من طرف المتطوع: <a href="../uploads/<?= htmlspecialchars($data['fichier_rapport']) ?>" target="_blank">Télécharger</a></p>
+    <p class="info-note"><i class="fa-regular fa-file-lines"></i> التقرير المرسل من طرف المتطوع: <a href="../uploads/<?= htmlspecialchars($data['fichier_rapport']) ?>" target="_blank">Télécharger</a></p>
 <?php endif; ?>
 
 <?php if ($isEdit && $data['statut'] === 'a_corriger' && $data['commentaire_admin']): ?>
-    <p class="error">⚠️ تمت الإعادة للتصحيح — تعليق:<?= htmlspecialchars($data['commentaire_admin']) ?></p>
+    <p class="error"><i class="fa-solid fa-triangle-exclamation" style= "color: #993104f0"></i> تمت الإعادة للتصحيح — تعليق:<?= htmlspecialchars($data['commentaire_admin']) ?></p>
 <?php endif; ?>
 
-<form method="POST" action="projet_edition_action.php" enctype="multipart/form-data" class="projet-form">
+<form method="POST" action="projet_edition_action.php" enctype="multipart/form-data" class="projet-form" id="editionForm">
+    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
     <input type="hidden" name="projet_id" value="<?= $projetId ?>">
     <?php if ($isEdit): ?><input type="hidden" name="id" value="<?= $data['id'] ?>"><?php endif; ?>
 
@@ -95,20 +97,26 @@ include '../includes/header.php';
 
     <label>إضافة صور <?= $isEdit ? '(بالإضافة إلى الصور الموجودة)' : '' ?></label>
     <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple>
-
-    <?php if ($isEdit && !empty($photos)): ?>
-        <div class="existing-photos">
-            <?php foreach ($photos as $ph): ?>
-                <div class="existing-photo">
-                    <img src="../uploads/<?= htmlspecialchars($ph['url']) ?>">
-                    <a href="projet_edition_action.php?delete_photo=<?= $ph['id'] ?>&edition_id=<?= $id ?>" onclick="return confirm('Supprimer cette photo ?');">✕</a>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-
-    <button type="submit"><?= $isEdit ? 'Enregistrer' : 'Créer l\'édition' ?></button>
-    <a href="projet_editions.php?projet_id=<?= $projetId ?>" class="btn-cancel">إلغاء</a>
 </form>
+<?php if ($isEdit && !empty($photos)): ?>
+    <div class="existing-photos">
+        <?php foreach ($photos as $ph): ?>
+            <div class="existing-photo">
+                <img src="../uploads/<?= htmlspecialchars($ph['url']) ?>">
+                <form method="POST" action="projet_edition_action.php" style="display:inline;" onsubmit="return confirm('حذف هذه الصورة؟');">
+                    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                    <input type="hidden" name="delete_photo" value="<?= $ph['id'] ?>">
+                    <input type="hidden" name="edition_id" value="<?= $id ?>">
+                    <button type="submit" class="link-button">✕ حذف</button>
+                </form>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
+<div class="container">
+    <button type="submit" class=" btn_adminprojet" form="editionForm"><?= $isEdit ? 'حفظ ' : 'إظافة النسخة ' ?></button>
+    <a href="projet_editions.php?projet_id=<?= $projetId ?>" class="btn_adminprojet">إلغاء</a>
+</div>
+
 
 <?php include '../includes/footer.php'; ?>
