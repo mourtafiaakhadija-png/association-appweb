@@ -16,7 +16,9 @@ if ($isEdit) {
     $projetId = $data['projet_id'];
 } else {
     $projetId = (int) ($_GET['projet_id'] ?? 0);
-    $prochainNumero = (int) $pdo->query("SELECT COALESCE(MAX(numero_edition), 0) + 1 FROM projet_editions WHERE projet_id = $projetId")->fetchColumn();
+    $stmtNum = $pdo->prepare("SELECT COALESCE(MAX(numero_edition), 0) + 1 FROM projet_editions WHERE projet_id = ?");
+    $stmtNum->execute([$projetId]);
+    $prochainNumero = (int) $stmtNum->fetchColumn();
     $data = [
         'numero_edition' => $prochainNumero, 'description' => '', 'budget_prevu' => '', 'budget_collecte' => 0,
         'date_debut' => '', 'date_fin' => '', 'statut' => 'validee', 'a_la_une' => 0, 'appel_benevoles_ouvert' => 0,
@@ -40,7 +42,7 @@ include '../includes/header.php';
 <h2><?= $isEdit ? 'تعديل الإصدار #' . $data['numero_edition'] : 'إصدار جديد' ?> — <?= htmlspecialchars($projet['titre']) ?></h2>
 
 <?php if ($isEdit && $data['fichier_rapport']): ?>
-    <p class="info-note"><i class="fa-regular fa-file-lines"></i> التقرير المرسل من طرف المتطوع: <a href="../uploads/<?= htmlspecialchars($data['fichier_rapport']) ?>" target="_blank">Télécharger</a></p>
+    <p class="info-note"><i class="fa-regular fa-file-lines"></i> التقرير المرسل من طرف رئيس النشاط: <a href="../uploads/<?= htmlspecialchars($data['fichier_rapport']) ?>" target="_blank">تحميل</a></p>
 <?php endif; ?>
 
 <?php if ($isEdit && $data['statut'] === 'a_corriger' && $data['commentaire_admin']): ?>

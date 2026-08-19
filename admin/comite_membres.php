@@ -30,11 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['retirer'])) {
     exit;
 }
 
+// NOTE : "AND pc.statut != 'non_retenu'" ajouté ci-dessous — les membres écartés
+// restent en base (le bénévole voit toujours son statut de son côté),
+// mais n'apparaissent plus dans la liste affichée à l'admin.
 $membres = $pdo->prepare(
     "SELECT pc.*, u.nom, u.prenom, u.email, u.telephone
      FROM participations_comite pc
      JOIN users u ON u.id = pc.user_id
-     WHERE pc.edition_id = ?
+     WHERE pc.edition_id = ? AND pc.statut != 'non_retenu'
      ORDER BY pc.statut, pc.date_reponse"
 );
 $membres->execute([$editionId]);
@@ -58,9 +61,11 @@ include '../includes/header.php';
             <td><?= htmlspecialchars($m['telephone'] ?: '-') ?></td>
             <td>
                 <?php if ($m['statut'] === 'confirme'): ?>
-                    <span class="badge badge-validee"><i class="fa-regular fa-circle-check"></i> مؤكد</span>
+                    <span class="badge badge-validee">مؤكد</span>
+                <?php elseif ($m['statut'] === 'non_retenu'): ?>
+                    <span class="badge" style="background:#6b7280;">غير محتفظ به</span>
                 <?php else: ?>
-                    <span class="badge badge-en_attente_validation"><i class="fa-solid fa-hourglass-start"></i> متوفر</span>
+                    <span class="badge badge-en_attente_validation">متوفر</span>
                 <?php endif; ?>
             </td>
             <td>

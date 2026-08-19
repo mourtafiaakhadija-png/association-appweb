@@ -1,3 +1,14 @@
+<?php
+$stmtNotif = $pdo->prepare(
+    "SELECT
+        (SELECT COUNT(*) FROM projet_editions e JOIN projets p ON p.id = e.projet_id WHERE p.responsable_id = ? AND e.statut = 'a_corriger') +
+        (SELECT COUNT(*) FROM projet_editions e JOIN projets p ON p.id = e.projet_id WHERE p.responsable_id = ? AND e.rapport_statut = 'a_corriger') +
+        (SELECT COUNT(*) FROM mises_a_jour_edition m JOIN projet_editions e ON e.id = m.edition_id JOIN projets p ON p.id = e.projet_id WHERE p.responsable_id = ? AND m.statut = 'a_corriger')
+    AS total"
+);
+$stmtNotif->execute([$_SESSION['benevole_id'], $_SESSION['benevole_id'], $_SESSION['benevole_id']]);
+$nbNotifications = (int) $stmtNotif->fetchColumn();
+?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -22,9 +33,16 @@
         <a href="appels_benevoles.php" class="<?= $currentPage === 'appels_benevoles.php' ? 'active' : '' ?>"><i class="fa-solid fa-bullhorn"></i> نداءات التطوع</a>
         <a href="mes_dons.php" class="<?= $currentPage === 'mes_dons.php' ? 'active' : '' ?>"><i class="fa-solid fa-hand-holding-dollar"></i> تبرعاتي</a>
         <a href="profil.php" class="<?= $currentPage === 'profil.php' ? 'active' : '' ?>"><i class="fa-solid fa-user"></i> حسابي</a>
+        <a href="documents.php">📁 ملفاتي</a>
     </nav>
 
     <div class="benevole-header-user">
+        <a href="notifications.php" class="benevole-notif-bell" title="<?= $nbNotifications ?> إشعار يحتاج انتباهكم">
+            <i class="fa-solid fa-bell"></i>
+            <?php if ($nbNotifications > 0): ?>
+                <span class="benevole-notif-badge"><?= $nbNotifications ?></span>
+            <?php endif; ?>
+        </a>
         <div class="benevole-avatar"><?= htmlspecialchars(mb_substr($_SESSION['benevole_prenom'] ?? '؟', 0, 1)) ?></div>
         <span>مرحبا، <?= htmlspecialchars($_SESSION['benevole_prenom'] ?? '') ?></span>
         <a href="logout.php" class="benevole-logout-btn" title="تسجيل الخروج"><i class="fa-solid fa-right-from-bracket"></i></a>

@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS donateurs_desabonnes (
+    email VARCHAR(150) NOT NULL PRIMARY KEY,
+    date_desabonnement DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

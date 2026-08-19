@@ -76,10 +76,11 @@ SELECT url FROM photos_projets ORDER BY RAND() LIMIT 12"
 
 <section class="stats-bar">
     <div class="container stats-grid">
-        <div class="stat-item"><div class="stat-number">120+</div><div class="stat-label">يتيم مكفول</div></div>
-        <div class="stat-item"><div class="stat-number">580</div><div class="stat-label">قفة خير وُزعت</div></div>
+        <div class="stat-item"><div class="stat-number">130+</div><div class="stat-label">يتيم مسجل بالجمعية</div></div>
+        <div class="stat-item"><div class="stat-number">580+</div><div class="stat-label">قفة خير وُزعت</div></div>
         <div class="stat-item"><div class="stat-number">700+</div><div class="stat-label">إفطار صائم</div></div>
         <div class="stat-item"><div class="stat-number">200+</div><div class="stat-label">متبرع بالدم</div></div>
+        <div class="stat-item"><div class="stat-number">14</div><div class="stat-label">يتيم مكفول</div></div>
     </div>
 </section>
 
@@ -110,8 +111,8 @@ SELECT url FROM photos_projets ORDER BY RAND() LIMIT 12"
                    <div class="project-progress"><div class="project-progress-fill" style="width:<?= $pct ?>%;"></div></div>
                    <div class="project-progress-label">
                         <?= number_format($p['budget_collecte'],0) ?> / <?= number_format($p['budget_prevu'],0) ?> د.م. (<?= $pct ?>%)
-                        <?php if ($p['budget_collecte'] > $p['budget_prevu']): ?>
-                            <span class="badge-goal-reached">🎉 الهدف تحقق</span>
+                        <?php if ($p['budget_collecte'] == $p['budget_prevu']): ?>
+                            <span class="badge-goal-reached"> الهدف تحقق</span>
                     <?php endif; ?>
                     </div>
                     <a href="projet_detail.php?id=<?= $p['id'] ?>" class="project-card-link">اقرأ المزيد ←</a>

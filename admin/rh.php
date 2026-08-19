@@ -35,7 +35,7 @@ $bureau = $pdo->query(
 )->fetchAll();
 
 $benevoles = $pdo->query(
-    "SELECT id, nom, prenom, email, telephone, statut, created_at 
+    "SELECT id, nom, prenom, email, telephone, photo, statut, created_at 
      FROM users WHERE role = 'benevole' ORDER BY nom"
 )->fetchAll();
 
@@ -89,18 +89,40 @@ include '../includes/header.php';
 <?php elseif ($tab === 'benevoles'): ?>
     <p class="info-note">يظهر المتطوعون هنا تلقائياً بعد قبول طلبات ترشحهم </p>
     <table class="rh-table">
-        <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الهاتف</th><th>الحالة</th><th>مسجل في</th></tr></thead>
+        <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الهاتف</th><th>الحالة</th><th>مسجل في</th><th>الإجراءات</th></tr></thead>
         <tbody>
         <?php foreach ($benevoles as $b): ?>
             <tr>
-                <td><?= htmlspecialchars($b['prenom'] . ' ' . $b['nom']) ?></td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;" class="rh-cell-flex">
+                        <?php if (!empty($b['photo'])): ?>
+                            <img src="../uploads/<?= htmlspecialchars($b['photo']) ?>" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">
+                        <?php endif; ?>
+                        <?= htmlspecialchars($b['prenom'] . ' ' . $b['nom']) ?>
+                    </div>
+                </td>
                 <td><?= htmlspecialchars($b['email']) ?></td>
                 <td><?= htmlspecialchars($b['telephone'] ?? '-') ?></td>
-                <td><?= htmlspecialchars($b['statut']) ?></td>
+                <td>
+                    <?php if ($b['statut'] === 'actif'): ?>
+                        <span class="badge badge-en_cours">نشيط</span>
+                    <?php else: ?>
+                        <span class="badge" style="background:#6b7280;">معطل</span>
+                    <?php endif; ?>
+                </td>
                 <td><?= htmlspecialchars($b['created_at']) ?></td>
+                <td>
+                    <form method="POST" action="rh_action.php" style="display:inline;" onsubmit="return confirm('<?= $b['statut'] === 'actif' ? 'تعطيل' : 'إعادة تفعيل' ?> حساب هذا المتطوع؟');">
+                        <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                        <input type="hidden" name="toggle_statut_benevole" value="<?= $b['id'] ?>">
+                        <button type="submit" class="btn-mini <?= $b['statut'] === 'actif' ? 'btn-reject' : 'btn-accept' ?>">
+                            <?= $b['statut'] === 'actif' ? '🚫 تعطيل' : '✅ إعادة تفعيل' ?>
+                        </button>
+                    </form>
+                </td>
             </tr>
         <?php endforeach; ?>
-        <?php if (empty($benevoles)): ?><tr><td colspan="5">لا يوجد أي متطوع حالياً</td></tr><?php endif; ?>
+        <?php if (empty($benevoles)): ?><tr><td colspan="6">لا يوجد أي متطوع حالياً</td></tr><?php endif; ?>
         </tbody>
     </table>
 

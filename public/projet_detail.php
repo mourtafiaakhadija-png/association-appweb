@@ -31,18 +31,34 @@ $editions = $stmt->fetchAll();
 $editionActuelle = $editions[0] ?? null;
 $editionsPassees = array_slice($editions, 1);
 
-// Photos de chaque édition (on charge tout d'un coup, regroupé par edition_id, pour éviter une requête par édition)
-$photosParEdition = [];
+// Mises à jour validées, groupées par édition (frise d'évolution)
+$majParEdition = [];
+$photosOriginales = []; // [edition_id] => photos de la description initiale (maj_id NULL)
+$photosParMaj = [];     // [maj_id] => photos rattachées à cette mise à jour
+
 if (!empty($editions)) {
     $editionIds = array_column($editions, 'id');
     $placeholders = implode(',', array_fill(0, count($editionIds), '?'));
+
+    $stmtMaj = $pdo->prepare(
+        "SELECT * FROM mises_a_jour_edition WHERE edition_id IN ($placeholders) AND statut = 'validee' ORDER BY date_ajout ASC"
+    );
+    $stmtMaj->execute($editionIds);
+    foreach ($stmtMaj->fetchAll() as $maj) {
+        $majParEdition[$maj['edition_id']][] = $maj;
+    }
+
     $stmtPhotos = $pdo->prepare("SELECT * FROM photos_projets WHERE edition_id IN ($placeholders) ORDER BY date_ajout");
     $stmtPhotos->execute($editionIds);
     foreach ($stmtPhotos->fetchAll() as $photo) {
-        $photosParEdition[$photo['edition_id']][] = $photo;
+        if ($photo['maj_id'] === null) {
+            $photosOriginales[$photo['edition_id']][] = $photo;
+        } else {
+            $photosParMaj[$photo['maj_id']][] = $photo;
+        }
     }
 }
-$photosActuelles = $editionActuelle ? ($photosParEdition[$editionActuelle['id']] ?? []) : [];
+$photosActuelles = $editionActuelle ? ($photosOriginales[$editionActuelle['id']] ?? []) : [];
 
 $stmt = $pdo->prepare("SELECT * FROM commentaires_projets WHERE projet_id = ? ORDER BY date_commentaire DESC");
 $stmt->execute([$id]);
@@ -131,6 +147,25 @@ if ($editionActuelle && $editionActuelle['budget_prevu'] > 0) {
             <p style="font-size:1.05rem; white-space:pre-line;"><?= htmlspecialchars($editionActuelle['description']) ?></p>
         </div>
 
+        <?php /* NOUVEAU : mises à jour validées de l'édition actuelle */ ?>
+        <?php if (!empty($majParEdition[$editionActuelle['id']])): ?>
+        <div class="evolution-feed">
+            <h3>آخر المستجدات</h3>
+            <?php foreach ($majParEdition[$editionActuelle['id']] as $maj): ?>
+                <div class="evolution-item">
+                    <span class="evolution-date"><?= date('d/m/Y', strtotime($maj['date_ajout'])) ?></span>
+                    <p style="white-space:pre-line;"><?= nl2br(htmlspecialchars($maj['contenu'])) ?></p>
+                    <?php if (!empty($photosParMaj[$maj['id']])): ?>
+                        <div class="evolution-photos">
+                            <?php foreach ($photosParMaj[$maj['id']] as $ph): ?>
+                                <img src="../uploads/<?= htmlspecialchars($ph['url']) ?>">
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
         <?php endif; ?>
 
         <!-- ================= FRISE CHRONOLOGIQUE DES ÉDITIONS PASSÉES ================= -->
@@ -139,24 +174,90 @@ if ($editionActuelle && $editionActuelle['budget_prevu'] > 0) {
             <h2>مسار المشروع عبر السنين</h2>
             <div class="editions-timeline">
                 <?php foreach ($editionsPassees as $ed):
-                    $photosEd = $photosParEdition[$ed['id']] ?? [];
+                    $photosEd = $photosOriginales[$ed['id']] ?? [];
                     $pctEd = $ed['budget_prevu'] > 0 ? min(100, round(($ed['budget_collecte'] / $ed['budget_prevu']) * 100)) : 0;
+                    $extrait = mb_substr($ed['description'], 0, 140) . (mb_strlen($ed['description']) > 140 ? '...' : '');
                 ?>
-                <div class="edition-timeline-item" id="edition-<?= $ed['numero_edition'] ?>">
-                    <?php if (!empty($photosEd)): ?>
-                        <img src="../uploads/<?= htmlspecialchars($photosEd[0]['url']) ?>" class="edition-timeline-photo">
-                    <?php else: ?>
-                        <div class="edition-timeline-photo placeholder">لا توجد صورة</div>
-                    <?php endif; ?>
-                    <div class="edition-timeline-body">
-                        <span class="edition-timeline-badge">الإصدار #<?= $ed['numero_edition'] ?></span>
-                        <?php if ($ed['date_debut']): ?>
-                            <span class="edition-timeline-date"><?= htmlspecialchars($ed['date_debut']) ?></span>
+                <details class="edition-timeline-item" id="edition-<?= $ed['numero_edition'] ?>">
+                    <summary class="edition-timeline-summary">
+                        <?php if (!empty($photosEd)): ?>
+                            <img src="../uploads/<?= htmlspecialchars($photosEd[0]['url']) ?>" class="edition-timeline-cover">
+                        <?php else: ?>
+                            <div class="edition-timeline-cover placeholder">لا صورة</div>
                         <?php endif; ?>
-                        <p style="white-space:pre-line;"><?= htmlspecialchars($ed['description']) ?></p>
-                        <p class="edition-timeline-budget"><?= number_format($ed['budget_collecte'], 0) ?> / <?= number_format($ed['budget_prevu'], 0) ?> د.م. (<?= $pctEd ?>%)</p>
+                        <div class="edition-timeline-summary-body">
+                            <span class="edition-timeline-badge">الإصدار #<?= $ed['numero_edition'] ?></span>
+                            <?php if ($ed['date_debut']): ?>
+                                <span class="edition-timeline-date"><?= htmlspecialchars($ed['date_debut']) ?></span>
+                            <?php endif; ?>
+                            <p class="edition-timeline-excerpt"><?= htmlspecialchars($extrait) ?></p>
+                        </div>
+                        <span class="edition-timeline-arrow"></span>
+                    </summary>
+
+                    <div class="edition-timeline-expanded">
+                        <div class="edition-timeline-expanded-grid">
+                            <?php /* CORRIGÉ : toutes les photos originales s'affichent désormais, pas une seule */ ?>
+                            <?php if (!empty($photosEd)): ?>
+                                <div class="edition-timeline-gallery-full">
+                                    <?php foreach ($photosEd as $ph): ?>
+                                        <img src="../uploads/<?= htmlspecialchars($ph['url']) ?>">
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="edition-timeline-photo placeholder">لا توجد صورة</div>
+                            <?php endif; ?>
+
+                            <div class="projet-info-card">
+                                <span class="project-tag" style="background:var(--gold-soft, #F0B429);">الإصدار #<?= $ed['numero_edition'] ?></span>
+                                <div class="budget-figures">
+                                    <span><?= number_format($ed['budget_collecte'], 0) ?> د.م.</span>
+                                    <span style="color:var(--ink-soft); font-weight:600;">من <?= number_format($ed['budget_prevu'], 0) ?> د.م.</span>
+                                </div>
+                                <div class="project-progress"><div class="project-progress-fill" style="width:<?= $pctEd ?>%;"></div></div>
+                                <div class="project-progress-label">
+                                    <?= number_format($ed['budget_collecte'],0) ?> / <?= number_format($ed['budget_prevu'],0) ?> د.م. (<?= $pctEd ?>%)
+                                    <?php if ($ed['budget_collecte'] > $ed['budget_prevu']): ?>
+                                        <span class="badge-goal-reached">🎉 الهدف تحقق</span>
+                                    <?php endif; ?>
+                                </div>
+                                <ul class="projet-meta-list">
+                                    <?php if ($ed['date_debut']): ?>
+                                    <li><span>تاريخ الانطلاق</span><span><?= htmlspecialchars($ed['date_debut']) ?></span></li>
+                                    <?php endif; ?>
+                                    <?php if ($ed['date_fin']): ?>
+                                    <li><span>تاريخ الانتهاء</span><span><?= htmlspecialchars($ed['date_fin']) ?></span></li>
+                                    <?php endif; ?>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="projet-description">
+                            <h3>الوصف</h3>
+                            <p style="white-space:pre-line;"><?= htmlspecialchars($ed['description']) ?></p>
+                        </div>
+
+                        <?php /* NOUVEAU : mises à jour validées de cette édition passée */ ?>
+                        <?php if (!empty($majParEdition[$ed['id']])): ?>
+                        <div class="evolution-feed">
+                            <h3>آخر المستجدات</h3>
+                            <?php foreach ($majParEdition[$ed['id']] as $maj): ?>
+                                <div class="evolution-item">
+                                    <span class="evolution-date"><?= date('d/m/Y', strtotime($maj['date_ajout'])) ?></span>
+                                    <p style="white-space:pre-line;"><?= nl2br(htmlspecialchars($maj['contenu'])) ?></p>
+                                    <?php if (!empty($photosParMaj[$maj['id']])): ?>
+                                        <div class="evolution-photos">
+                                            <?php foreach ($photosParMaj[$maj['id']] as $ph): ?>
+                                                <img src="../uploads/<?= htmlspecialchars($ph['url']) ?>">
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
-                </div>
+                </details>
                 <?php endforeach; ?>
             </div>
         </div>

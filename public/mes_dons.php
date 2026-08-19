@@ -1,22 +1,66 @@
 <?php
 require_once '../config/db.php';
+require_once '../includes/mailer.php';
+require_once '../config/mail.php';
 $pageTitle = 'تبرعاتي';
 
-$email = trim($_GET['email'] ?? '');
 $dons = [];
-$searched = false;
+$etape = 'formulaire'; // formulaire | email_envoye | resultats | lien_invalide
 
-if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $searched = true;
+// --- Étape 1 : demande d'accès (POST) → génère un token et l'envoie par email ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
+    $email = trim($_POST['email']);
+
+    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $token = bin2hex(random_bytes(32));
+        $expireAt = date('Y-m-d H:i:s', time() + 15 * 60); // valable 15 minutes
+
+        $pdo->prepare(
+            "INSERT INTO acces_dons_tokens (email, token, expire_at) VALUES (?, ?, ?)"
+        )->execute([$email, $token, $expireAt]);
+
+        $lien = SITE_URL . "/public/mes_dons.php?email=" . urlencode($email) . "&token=" . $token;
+
+        sendMail($email, $email, 'رابط الاطلاع على تبرعاتكم', "
+            <p>مرحبا،</p>
+            <p>اضغطوا على الرابط التالي للاطلاع على سجل تبرعاتكم (صالح لمدة 15 دقيقة):</p>
+            <p><a href='$lien'>$lien</a></p>
+            <p>إذا لم تطلبوا هذا الرابط، يمكنكم تجاهل هذه الرسالة بأمان.</p>
+        ");
+    }
+    // Message générique dans tous les cas (email valide ou pas), pour ne jamais révéler
+    // si une adresse est associée à des dons ou même si elle existe.
+    $etape = 'email_envoye';
+}
+
+// --- Étape 2 : vérification du lien reçu par email (GET avec token) ---
+elseif (!empty($_GET['email']) && !empty($_GET['token'])) {
+    $email = trim($_GET['email']);
+    $token = trim($_GET['token']);
+
     $stmt = $pdo->prepare(
-        "SELECT d.*, p.titre, p.id as projet_id, e.numero_edition, e.description, e.budget_collecte, e.budget_prevu
-         FROM dons d 
-         JOIN projets p ON d.projet_id = p.id 
-         LEFT JOIN projet_editions e ON d.edition_id = e.id
-         WHERE d.email_donateur = ? ORDER BY d.date_don DESC"
+        "SELECT * FROM acces_dons_tokens WHERE email = ? AND token = ? AND utilise = 0 AND expire_at > NOW()"
     );
-    $stmt->execute([$email]);
-    $dons = $stmt->fetchAll();
+    $stmt->execute([$email, $token]);
+    $jeton = $stmt->fetch();
+
+    if ($jeton) {
+        // Jeton valide : à usage unique, on le marque utilisé immédiatement
+        $pdo->prepare("UPDATE acces_dons_tokens SET utilise = 1 WHERE id = ?")->execute([$jeton['id']]);
+
+        $stmt = $pdo->prepare(
+            "SELECT d.*, p.titre, p.id as projet_id, e.numero_edition, e.description, e.budget_collecte, e.budget_prevu
+             FROM dons d 
+             JOIN projets p ON d.projet_id = p.id 
+             LEFT JOIN projet_editions e ON d.edition_id = e.id
+             WHERE d.email_donateur = ? ORDER BY d.date_don DESC"
+        );
+        $stmt->execute([$email]);
+        $dons = $stmt->fetchAll();
+        $etape = 'resultats';
+    } else {
+        $etape = 'lien_invalide';
+    }
 }
 
 include '../includes/header_public.php';
@@ -25,18 +69,33 @@ include '../includes/header_public.php';
 <section class="page-hero">
     <div class="container">
         <h1>تبرعاتي</h1>
-        <p>أدخلوا بريدكم الإلكتروني لعرض سجل تبرعاتكم</p>
+        <p>أدخلوا بريدكم الإلكتروني، وسنرسل لكم رابطا آمنا لعرض سجل تبرعاتكم</p>
     </div>
 </section>
 
 <section class="section">
     <div class="container" style="max-width:700px;">
-        <form method="GET" class="search-dons-form">
-            <input type="email" name="email" placeholder="بريدكم الإلكتروني" value="<?= htmlspecialchars($email) ?>" required>
-            <button type="submit">بحث</button>
-        </form>
 
-        <?php if ($searched): ?>
+        <?php if ($etape === 'formulaire' || $etape === 'email_envoye' || $etape === 'lien_invalide'): ?>
+            <form method="POST" class="search-dons-form">
+                <input type="email" name="email" placeholder="بريدكم الإلكتروني" required>
+                <button type="submit">إرسال رابط الاطلاع</button>
+            </form>
+        <?php endif; ?>
+
+        <?php if ($etape === 'email_envoye'): ?>
+            <p class="badge-empty" style="margin-top:1.5rem;">
+                إذا كان بريدكم الإلكتروني مرتبطا بتبرعات سابقة، ستتوصلون برابط للاطلاع عليها خلال دقائق. تفقدوا صندوق الوارد (ومجلد الرسائل غير المرغوب فيها).
+            </p>
+        <?php endif; ?>
+
+        <?php if ($etape === 'lien_invalide'): ?>
+            <p class="badge-empty" style="margin-top:1.5rem; color:#dc2626;">
+                هذا الرابط غير صالح أو منتهي الصلاحية (صالح لمدة 15 دقيقة فقط، ولمرة واحدة). يرجى طلب رابط جديد أعلاه.
+            </p>
+        <?php endif; ?>
+
+        <?php if ($etape === 'resultats'): ?>
             <?php if (empty($dons)): ?>
                 <p class="badge-empty">لا توجد تبرعات مرتبطة بهذا البريد الإلكتروني.</p>
             <?php else: ?>
@@ -72,6 +131,7 @@ include '../includes/header_public.php';
                 </div>
             <?php endif; ?>
         <?php endif; ?>
+
     </div>
 </section>
 

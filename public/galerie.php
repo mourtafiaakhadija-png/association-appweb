@@ -4,7 +4,14 @@ $pageTitle = 'معرض الصور';
 include '../includes/header_public.php';
 
 $photos = $pdo->query(
-    "SELECT ph.url, p.titre FROM photos_projets ph JOIN projets p ON ph.projet_id = p.id ORDER BY ph.date_ajout DESC"
+    "SELECT ph.url, p.titre 
+     FROM photos_projets ph 
+     JOIN projets p ON ph.projet_id = p.id
+     JOIN projet_editions e ON ph.edition_id = e.id
+     LEFT JOIN mises_a_jour_edition m ON ph.maj_id = m.id
+     WHERE e.statut = 'validee'
+       AND (ph.maj_id IS NULL OR m.statut = 'validee')
+     ORDER BY ph.date_ajout DESC"
 )->fetchAll();
 ?>
 

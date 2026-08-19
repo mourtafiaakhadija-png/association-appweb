@@ -1,6 +1,10 @@
 /* ===========================================================
    FFoundation 
    =========================================================== */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
 * { 
     box-sizing: border-box; 
     margin: 0; 
@@ -227,7 +231,7 @@ body {
    Éléments communs (notes, erreurs, boutons, badges)
    =========================================================== */
 .info-note { 
-    background: #eff6ff; 
+    background: #e0eeff7e; 
     padding: 0.7rem 1rem; 
     border-radius: 8px; 
     color: #1e40af; 
@@ -278,8 +282,8 @@ body {
     padding: 0.25rem 0.7rem; 
     border-radius: 10px; 
     background: #e5e7eb; 
-    color: #333; display: 
-    inline-block; 
+    color: #333; 
+    display: inline-block; 
 }
 
 /* Statuts de projet */
@@ -304,6 +308,16 @@ body {
     background: #dc2626; 
 }
 .badge-validee { 
+    background: #16a34a; 
+}
+/* Statuts de rapport */
+.badge-rapport-en_attente { 
+    background: #d97706; 
+}
+.badge-rapport-a_corriger { 
+    background: #dc2626; 
+}
+.badge-rapport-valide { 
     background: #16a34a; 
 }
 
@@ -512,6 +526,30 @@ body {
     box-shadow: 0 4px 20px rgba(18,39,92,0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+.maj-item {
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fafafa;
+}
+.maj-date {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.4rem;
+}
+.maj-photos-count {
+    font-size: 0.85rem;
+    color: #666;
+}
+.rapport-comment {
+    margin-top: 0.4rem;
+    padding: 0.5rem 0.7rem;
+    background: #fef2f2;
+    border-radius: 4px;
+    color: #b91c1c;
+    font-size: 0.85rem;
+}
 
 
 /* ===========================================================
@@ -604,3 +642,237 @@ body {
     transition: background 0.2s;
 }
 .benevole-back-btn:hover { background: #f4f5f7; }
+.btn-submit-validation {
+    background: #16a34a;
+    color: #fff;
+    border: none;
+}
+/* ---------- Sections du formulaire édition ---------- */
+.form-section {
+    margin-top: 1.8rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+}
+
+.form-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+}
+
+.form-actions button,
+.form-actions .btn-cancel {
+    padding: 0.65rem 1.3rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1.5px solid transparent;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-save {
+    background: #fff;
+    color: #1E3E8C;
+    border-color: #1E3E8C;
+}
+.btn-save:hover { background: #1145d3bb; }
+
+.btn-submit-validation {
+    background: #16a34a;
+    color: #fff;
+}
+.btn-submit-validation:hover { background: #15803d; }
+
+.btn-cancel {
+    background: #fff;
+    color: #414345;
+    border-color: #d1d5db;
+}
+.btn-cancel:hover { background: #a8bdd270; }
+
+/* ---------- Section "سجل التحديثات" ---------- */
+.maj-item {
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fafafa;
+}
+.maj-form-add {
+    padding: 1.2rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px dashed #cbd5e1;
+    margin-top: 1rem;
+}
+
+/* ---------- Boutons d'action mini (liste des éditions) ---------- */
+.rapport-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+.btn-mini {
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: #1f2937;
+    white-space: nowrap;
+}
+.btn-mini.btn-accept { 
+    background: #16a34a; 
+    color: #fff; 
+    border-color: #16a34a; 
+}
+.btn-mini.btn-reject { 
+    background: #dc2626; 
+    color: #fff; 
+    border-color: #dc2626; 
+}
+.renvoi-form label.maj-edit-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0.6rem 0 0.3rem;
+}
+.renvoi-form .maj-edit-file {
+    display: block;
+    width: 100%;
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+}
+.benevole-notif-bell {
+    position: relative;
+    color: #fff;
+    font-size: 1.2rem;
+    text-decoration: none;
+    margin-inline-end: 1.4rem;
+}
+.benevole-notif-badge {
+    position: absolute;
+    top: -8px;
+    left: -10px;
+    background: #dc2626;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    border: 2px solid var(--blue-dark, #1E3E8C);
+}
+.notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+.notif-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.2s ease;
+}
+.notif-item:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+.notif-item-icon {
+    font-size: 1.6rem;
+}
+.notif-item-body {
+    flex: 1;
+}
+.notif-item-body strong {
+    display: block;
+    margin-bottom: 0.2rem;
+}
+.notif-item-body p {
+    color: #b91c1c;
+    font-size: 0.9rem;
+    margin: 0;
+}
+.notif-item-arrow {
+    font-size: 1.2rem;
+    color: #9ca3af;
+}
+.renvoi-form textarea {
+    min-height: 90px;
+    min-width: 80%;
+}
+.existing-photo-img.broken-img {
+    background: #fef2f2;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.existing-photo-img.broken-img::after {
+    content: "⚠️ الصورة مفقودة";
+    color: #b91c1c;
+    font-size: 0.8rem;
+}
+.form-section {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+.maj-form-add {
+    max-width: 650px;
+}
+.maj-form-add textarea {
+    min-height: 100px;
+}
+/* ---------- Responsive mobile pour les tableaux (rh-table) ---------- */
+@media (max-width: 768px) {
+    .rh-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        max-width: 100%;
+    }
+    .rh-table th, .rh-table td {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.85rem;
+    }
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .filter-form select {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}

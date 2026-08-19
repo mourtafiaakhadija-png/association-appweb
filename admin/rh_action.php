@@ -16,6 +16,20 @@ verifierJetonCsrf();
 $type = $_POST['type'] ?? 'bureau';
 $id = isset($_POST['id']) ? (int) $_POST['id'] : null;
 $isEdit = $id !== null;
+// --- Activer / désactiver un compte bénévole ---
+if (isset($_POST['toggle_statut_benevole'])) {
+    $userId = (int) $_POST['toggle_statut_benevole'];
+    $stmt = $pdo->prepare("SELECT statut FROM users WHERE id = ? AND role = 'benevole'");
+    $stmt->execute([$userId]);
+    $statutActuel = $stmt->fetchColumn();
+
+    if ($statutActuel !== false) {
+        $nouveauStatut = ($statutActuel === 'actif') ? 'inactif' : 'actif';
+        $pdo->prepare("UPDATE users SET statut = ? WHERE id = ?")->execute([$nouveauStatut, $userId]);
+    }
+    header('Location: rh.php?tab=benevoles');
+    exit;
+}
 
 try {
     if ($type === 'bureau') {

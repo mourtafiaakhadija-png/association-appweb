@@ -6,6 +6,7 @@ require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
 require_once '../includes/upload_helper.php';
+require_once '../includes/notifications.php';
 
 // --- Suppression d'une photo ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_photo'])) {
@@ -37,11 +38,23 @@ $statut = $_POST['statut'];
 $aLaUne = isset($_POST['a_la_une']) ? 1 : 0;
 $appelBenevolesOuvert = isset($_POST['appel_benevoles_ouvert']) ? 1 : 0;
 
+// --- Infos utiles pour décider si on notifie, capturées AVANT la sauvegarde ---
+$ancienStatut = null;
+if ($isEdit) {
+    $stmtAncien = $pdo->prepare("SELECT statut FROM projet_editions WHERE id = ?");
+    $stmtAncien->execute([$id]);
+    $ancienStatut = $stmtAncien->fetchColumn();
+}
+$stmtDejaValidee = $pdo->prepare(
+    "SELECT COUNT(*) FROM projet_editions WHERE projet_id = ? AND statut = 'validee'" . ($isEdit ? " AND id != ?" : "")
+);
+$stmtDejaValidee->execute($isEdit ? [$projetId, $id] : [$projetId]);
+$projetAvaitDejaUneEditionValidee = (bool) $stmtDejaValidee->fetchColumn();
+
 try {
     $pdo->beginTransaction();
 
     if ($isEdit) {
-        // Si l'admin valide maintenant, on note la date de validation ; sinon on ne la touche pas
         $dateValidationSql = $statut === 'validee' ? ", date_validation = NOW()" : "";
 
         $pdo->prepare(
@@ -66,6 +79,7 @@ try {
     }
 
     // --- Upload des photos multiples, rattachées à cette édition ---
+    $photosAjouteesCount = 0;
     if (!empty($_FILES['photos']['name'][0])) {
         $count = count($_FILES['photos']['name']);
         for ($i = 0; $i < $count; $i++) {
@@ -84,11 +98,28 @@ try {
                 $pdo->prepare(
                     "INSERT INTO photos_projets (projet_id, edition_id, url) VALUES (?, ?, ?)"
                 )->execute([$projetId, $id, $filename]);
+                $photosAjouteesCount++;
             }
         }
     }
 
     $pdo->commit();
+
+    // --- Notifications aux donateurs, après le commit (échec email ≠ échec de la sauvegarde) ---
+    if ($statut === 'validee') {
+        $projetTitre = $pdo->prepare("SELECT titre FROM projets WHERE id = ?");
+        $projetTitre->execute([$projetId]);
+        $projetTitre = $projetTitre->fetchColumn();
+
+        if (!$projetAvaitDejaUneEditionValidee) {
+            // Première fois que ce projet devient visible/finançable : on prévient tous les anciens donateurs du site
+            notifierNouveauProjetOuvert($pdo, $projetId, $projetTitre);
+        } elseif ($ancienStatut !== 'validee' || $photosAjouteesCount > 0) {
+            // Le projet avait déjà du contenu publié, et on vient d'y ajouter du nouveau (description/photos)
+            notifierDonateursProjet($pdo, $projetId, $projetTitre);
+        }
+    }
+
     header('Location: projet_editions.php?projet_id=' . $projetId);
     exit;
 

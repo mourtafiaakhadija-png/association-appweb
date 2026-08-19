@@ -68,27 +68,26 @@ include '../includes/header_benevole.php';
                 <?php endif; ?>
             </td>
             <td>
-                <?php if (in_array($e['statut'], ['brouillon', 'a_corriger'])): ?>
-                    <a href="projet_edition_form.php?id=<?= $e['id'] ?>">تعديل</a> |
-                    <form method="POST" style="display:inline;" onsubmit="return confirm('إرسال هذا الإصدار للإدارة للمصادقة عليه؟');">
-                        <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
-                        <input type="hidden" name="projet_id" value="<?= $projetId ?>">
-                        <input type="hidden" name="soumettre" value="<?= $e['id'] ?>">
-                        <button type="submit" class="link-button">إرسال للمصادقة</button>
-                    </form>
-                    <?php if ($e['statut'] === 'brouillon'): ?>
-                        <form method="POST" style="display:inline;" onsubmit="return confirm('حذف هذه المسودة؟');">
+                <div class="rapport-actions">
+                    <?php if (in_array($e['statut'], ['brouillon', 'a_corriger'])): ?>
+                        <a href="projet_edition_form.php?id=<?= $e['id'] ?>" class="btn-mini">✏️ تعديل</a>
+                        <form method="POST" style="display:inline;" onsubmit="return confirm('إرسال هذا الإصدار للإدارة للمصادقة عليه؟');">
                             <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
                             <input type="hidden" name="projet_id" value="<?= $projetId ?>">
-                            <input type="hidden" name="delete" value="<?= $e['id'] ?>">
-                            <button type="submit" class="link-button">حذف</button>
+                            <input type="hidden" name="soumettre" value="<?= $e['id'] ?>">
+                            <button type="submit" class="btn-mini btn-accept">📤 إرسال للمصادقة</button>
                         </form>
+                        <?php if ($e['statut'] === 'brouillon'): ?>
+                            <form method="POST" style="display:inline;" onsubmit="return confirm('حذف هذه المسودة؟');">
+                                <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
+                                <input type="hidden" name="delete" value="<?= $e['id'] ?>">
+                                <button type="submit" class="btn-mini btn-reject">🗑️ حذف</button>
+                            </form>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <a href="projet_edition_form.php?id=<?= $e['id'] ?>" class="btn-mini">👁️ عرض / إضافة رابور</a>
                     <?php endif; ?>
-                <?php elseif ($e['statut'] === 'en_attente_validation'): ?>
-                    <em>في انتظار مراجعة الإدارة</em>
-                <?php else: ?>
-                    <a href="projet_edition_form.php?id=<?= $e['id'] ?>">عرض / إضافة رابور</a>
-                <?php endif; ?>
+                </div>
             </td>
         </tr>
     <?php endforeach; ?>

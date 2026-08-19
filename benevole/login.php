@@ -2,6 +2,7 @@
 session_start();
 require_once '../includes/login_throttle.php';
 require_once '../config/db.php';
+require_once '../includes/csrf.php';
 
 if (isset($_SESSION['benevole_id'])) {
     header('Location: index.php');
@@ -18,21 +19,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($minutesRestantes > 0) {
         $erreur = "تم حظر هذا الحساب مؤقتا. حاولوا مجددا بعد $minutesRestantes دقيقة.";
     } else {
-        $stmt = $pdo->prepare("SELECT id, nom, prenom, email, password, role FROM users WHERE email = ? AND role = 'benevole'");
+        $stmt = $pdo->prepare("SELECT id, nom, prenom, email, password, role, statut FROM users WHERE email = ? AND role = 'benevole'");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
-        if ($user && password_verify($motDePasse, $user['password'])) {
+    if ($user && password_verify($motDePasse, $user['password'])) {
+        if ($user['statut'] !== 'actif') {
+            $erreur = 'هذا الحساب معطل حاليا. يرجى التواصل مع الإدارة.';
+        } else {
             reinitialiserTentatives($pdo, $email);
+            session_regenerate_id(true);
             $_SESSION['benevole_id'] = $user['id'];
             $_SESSION['benevole_nom'] = $user['nom'];
             $_SESSION['benevole_prenom'] = $user['prenom'];
             header('Location: index.php');
             exit;
-        } else {
-            enregistrerEchec($pdo, $email);
-            $erreur = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
         }
+    } else {
+        enregistrerEchec($pdo, $email);
+        $erreur = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+    }
     }
 }
 ?>
@@ -50,7 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="login-card">
         <h1>فضاء المتطوع</h1>
         <p class="login-subtitle">جمعية الجيل المبدع</p>
-
+        <?php if (isset($_GET['desactive'])): ?>
+            <p class="error">تم تسجيل خروجكم لأن هذا الحساب معطل حاليا.</p>
+        <?php endif; ?>
         <?php if ($erreur): ?>
             <p class="error"><?= htmlspecialchars($erreur) ?></p>
         <?php endif; ?>

@@ -32,6 +32,7 @@
             <div class="social-links">
                 <a href="https://www.facebook.com/share/17ncGEPvD2/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook fa-2x"></i></a>
                 <a href="https://www.instagram.com/ass.generation.creative/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-square-instagram fa-2x"></i></a>
+                <a href="https://wa.me/212648656411" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp fa-2x"></i></a>
             </div>
         </div>
     </div>

@@ -1,0 +1,1 @@
+ALTER TABLE candidatures_benevoles ADD COLUMN photo VARCHAR(255) DEFAULT NULL AFTER niveau_etude;

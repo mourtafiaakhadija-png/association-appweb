@@ -12,6 +12,7 @@ $stmt = $pdo->prepare(
     "SELECT p.id, p.titre, p.statut AS projet_statut,
             e.id AS edition_id, e.numero_edition, e.statut AS edition_statut,
             e.budget_prevu, e.budget_collecte,
+            e.fichier_rapport, e.rapport_statut, e.commentaire_rapport,
             (SELECT COUNT(*) FROM dons WHERE edition_id = e.id) AS nb_dons
      FROM projets p
      LEFT JOIN projet_editions e ON e.id = (
@@ -51,8 +52,18 @@ include '../includes/header_benevole.php';
             <?php if ($p['edition_id']): ?>
                 <span class="badge badge-<?= $p['edition_statut'] ?>"><?= label('statut_edition', $p['edition_statut']) ?></span>
                 <span class="badge-secondary">الإصدار #<?= $p['numero_edition'] ?></span>
+            <?php if ($p['fichier_rapport']): ?>
+                <?php if ($p['rapport_statut'] === 'valide'): ?>
+                    <span class="badge badge-rapport-valide">✅ التقرير مقبول</span>
+                <?php elseif ($p['rapport_statut'] === 'a_corriger'): ?>
+                    <span class="badge badge-rapport-a_corriger">⚠️ التقرير يحتاج تصحيح</span>
+                <?php elseif ($p['rapport_statut'] === 'en_attente'): ?>
+                    <span class="badge badge-rapport-en_attente">⏳ التقرير في انتظار المراجعة</span>
+                <?php endif; ?>
+            <?php endif; ?>
 
-                <?php $pct = $p['budget_prevu'] > 0 ? min(100, round(($p['budget_collecte'] / $p['budget_prevu']) * 100)) : 0; ?>
+            
+            <?php $pct = $p['budget_prevu'] > 0 ? min(100, round(($p['budget_collecte'] / $p['budget_prevu']) * 100)) : 0; ?>
                 <div class="project-progress"><div class="project-progress-fill" style="width:<?= $pct ?>%;"></div></div>
                 <p class="projet-budget"><?= number_format($p['budget_collecte'], 0) ?> / <?= number_format($p['budget_prevu'], 0) ?> د.م. (<?= $pct ?>%)</p>
                 <p class="benevole-stat"><i class="fa-solid fa-coins"></i> عدد التبرعات المستلمة: <strong><?= $p['nb_dons'] ?></strong></p>

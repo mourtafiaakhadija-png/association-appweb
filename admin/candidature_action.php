@@ -44,14 +44,15 @@ try {
         $tempPasswordHash = password_hash($tempPasswordClair, PASSWORD_DEFAULT);
 
         $pdo->prepare(
-            "INSERT INTO users (nom, prenom, email, password, role, telephone, statut) 
-             VALUES (?, ?, ?, ?, 'benevole', ?, 'actif')"
+            "INSERT INTO users (nom, prenom, email, password, role, telephone, photo, statut) 
+            VALUES (?, ?, ?, ?, 'benevole', ?, ?, 'actif')"
         )->execute([
             $candidature['nom'],
             $candidature['prenom'],
             $candidature['email'],
             $tempPasswordHash,
             $candidature['telephone'],
+            $candidature['photo'],
         ]);
 
         $pdo->prepare(

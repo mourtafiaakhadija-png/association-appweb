@@ -24,10 +24,13 @@
             <a href="index.php" class="<?= $currentPage === 'index.php' ? 'active' : '' ?>"><i class="fa-solid fa-gauge"></i> لوحة التحكم</a>
             <a href="rh.php" class="<?= $currentPage === 'rh.php' ? 'active' : '' ?>"><i class="fa-solid fa-users"></i> الموارد البشرية</a>
             <a href="projets.php" class="<?= $currentPage === 'projets.php' ? 'active' : '' ?>"><i class="fa-solid fa-diagram-project"></i> المشاريع</a>
+            <a href="rapports.php" class="<?= $currentPage === 'rapports.php' ? 'active' : '' ?>"><i class="fa-solid fa-file-lines"></i> التقارير</a>
+            <a href="mises_a_jour.php" class="<?= $currentPage === 'mises_a_jour.php' ? 'active' : '' ?>"><i class="fa-solid fa-arrows-rotate"></i> التحديثات</a>
             <a href="dons.php" class="<?= $currentPage === 'dons.php' ? 'active' : '' ?>"><i class="fa-solid fa-hand-holding-dollar"></i> التبرعات</a>
             <a href="messages.php" class="<?= $currentPage === 'messages.php' ? 'active' : '' ?>"><i class="fa-solid fa-envelope"></i> الرسائل</a>
             <a href="candidatures.php" class="<?= $currentPage === 'candidatures.php' ? 'active' : '' ?>"><i class="fa-solid fa-user-plus"></i> طلبات الترشح</a>
             <a href="comites.php" class="<?= $currentPage === 'comites.php' ? 'active' : '' ?>"><i class="fa-solid fa-people-group"></i> اللجان</a>
+            <a href="documents.php" class="<?= $currentPage === 'documents.php' ? 'active' : '' ?>"><i class="fa-solid fa-folder-open"></i> الملفات</a>
         </nav>
 
 

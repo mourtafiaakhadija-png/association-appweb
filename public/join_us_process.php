@@ -1,6 +1,7 @@
 <?php
 require_once '../config/db.php';
 require_once '../includes/mailer.php';
+require_once '../includes/upload_helper.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: join_us.php');
@@ -29,7 +30,7 @@ if ($motivation === '') $errors[] = "الدافع مطلوب";
 // date_naissance est optionnelle : si vide, on la met à NULL plutôt qu'une chaîne vide
 // (une chaîne vide '' ferait planter la colonne DATE de MySQL)
 if ($dateNaissance === '') $dateNaissance = null;
-
+$photo = handleImageUpload('photo', '../uploads/');
 if (!empty($errors)) {
     header('Location: join_us.php?error=1');
     exit;
@@ -38,10 +39,9 @@ if (!empty($errors)) {
 try {
     $pdo->prepare(
         "INSERT INTO candidatures_benevoles 
-         (nom, prenom, email, telephone, date_naissance, ville, profession, niveau_etude, competences, experiences, motivation) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-    )->execute([$nom, $prenom, $email, $telephone, $dateNaissance, $ville, $profession, $niveauEtude, $competences, $experiences, $motivation]);
-
+        (nom, prenom, email, telephone, date_naissance, ville, profession, niveau_etude, photo, competences, experiences, motivation) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    )->execute([$nom, $prenom, $email, $telephone, $dateNaissance, $ville, $profession, $niveauEtude, $photo, $competences, $experiences, $motivation]);
     // Email d'accusé de réception (le candidat aura une vraie réponse plus tard, via admin/candidature_action.php)
     $bodyHtml = "
         <div dir='rtl' style='font-family:Tajawal,Arial,sans-serif; max-width:600px; margin:0 auto;'>

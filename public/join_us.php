@@ -22,7 +22,7 @@ include '../includes/header_public.php';
             <?php if (isset($_GET['error'])): ?>
                 <p class="error">يرجى ملء جميع الحقول المطلوبة بشكل صحيح.</p>
             <?php endif; ?>
-            <form method="POST" action="join_us_process.php" class="don-form">
+            <form method="POST" action="join_us_process.php" class="don-form" enctype="multipart/form-data">
                 <label>الاسم الشخصي</label>
                 <input type="text" name="prenom" required placeholder="اسمك الشخصي">
 
@@ -46,6 +46,9 @@ include '../includes/header_public.php';
 
                 <label>المستوى الدراسي</label>
                 <input type="text" name="niveau_etude" placeholder="آخر شهادة أو مستوى دراسي">
+
+                <label>الصورة الشخصية (اختياري)</label>
+                <input type="file" name="photo" accept="image/jpeg,image/png,image/webp">
 
                 <label>المهارات</label>
                 <textarea name="competences" rows="3" placeholder="مهاراتك (تنظيم، تصميم، تدريس...)" style="width:100%; padding:0.65rem; margin-top:0.35rem; border:1px solid var(--border); border-radius:8px; font-family:var(--font-body);"></textarea>

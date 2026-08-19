@@ -1,0 +1,9 @@
+# Empêche l'accès direct au dossier .git si jamais il est déployé par erreur
+<IfModule mod_alias.c>
+    RedirectMatch 404 /\.git
+</IfModule>
+
+# Empêche l'accès direct aux fichiers .sql et .md n'importe où sur le site
+<FilesMatch "\.(sql|md)$">
+    Require all denied
+</FilesMatch>

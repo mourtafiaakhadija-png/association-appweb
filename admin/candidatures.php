@@ -48,12 +48,31 @@ include '../includes/header.php';
         <tr>
             <td><?= htmlspecialchars($c['date_candidature']) ?></td>
             <td>
-                <strong><?= htmlspecialchars($c['prenom'] . ' ' . $c['nom']) ?></strong><br>
-                <small><?= htmlspecialchars($c['profession'] ?: '-') ?> — <?= htmlspecialchars($c['niveau_etude'] ?: '-') ?></small>
+                <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;" class="rh-cell-flex">
+                    <?php if ($c['photo']): ?>
+                        <img src="../uploads/<?= htmlspecialchars($c['photo']) ?>" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <?php endif; ?>
+                    <div>
+                        <strong><?= htmlspecialchars($c['prenom'] . ' ' . $c['nom']) ?></strong><br>
+                        <small><?= htmlspecialchars($c['profession'] ?: '-') ?> — <?= htmlspecialchars($c['niveau_etude'] ?: '-') ?></small>
+                    </div>
+                </div>
             </td>
             <td><?= htmlspecialchars($c['email']) ?><br><small><?= htmlspecialchars($c['telephone'] ?: '-') ?></small></td>
             <td><?= htmlspecialchars($c['ville'] ?: '-') ?></td>
-            <td style="max-width:280px;"><?= nl2br(htmlspecialchars($c['motivation'])) ?></td>
+            <td style="max-width:280px;">
+                <?= nl2br(htmlspecialchars(mb_substr($c['motivation'], 0, 100))) ?><?= mb_strlen($c['motivation']) > 100 ? '...' : '' ?>
+                <details class="candidature-details">
+                    <summary>عرض التفاصيل الكاملة</summary>
+                    <p><strong>الدافع الكامل:</strong><br><?= nl2br(htmlspecialchars($c['motivation'])) ?></p>
+                    <?php if ($c['competences']): ?>
+                        <p><strong>المهارات:</strong><br><?= nl2br(htmlspecialchars($c['competences'])) ?></p>
+                    <?php endif; ?>
+                    <?php if ($c['experiences']): ?>
+                        <p><strong>التجارب السابقة:</strong><br><?= nl2br(htmlspecialchars($c['experiences'])) ?></p>
+                    <?php endif; ?>
+                </details>
+            </td>
             <td>
                 <?php if ($c['statut'] === 'en_attente'): ?>
                     <i class="fa-solid fa-hourglass-start"></i> قيد الانتظار

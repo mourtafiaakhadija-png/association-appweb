@@ -3,6 +3,7 @@ session_start();
 require_once '../includes/i18n_admin.php';
 require_once '../includes/auth_check.php';
 require_once '../config/db.php';
+require_once '../includes/csrf.php';
 
 $projetId = (int) ($_GET['id'] ?? 0);
 
@@ -13,6 +14,7 @@ if (!$projet) die("Projet introuvable.");
 
 // Ajout manuel d'une note d'historique (ex: "Visite de terrain effectuée", "Réception d'un don en nature")
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['note'])) {
+    verifierJetonCsrf();
     $pdo->prepare(
         "INSERT INTO historique_projets (projet_id, description_action, auteur_id) VALUES (?, ?, ?)"
     )->execute([$projetId, trim($_POST['note']), $_SESSION['user_id']]);
@@ -36,6 +38,7 @@ include '../includes/header.php';
 <p><a href="projets.php">&larr;الرجوع للمشاريع</a></p>
 
 <form method="POST" class="historique-form">
+    <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
     <label>إضافة ملاحظة يدوية إلى السجل</label>
     <textarea name="note" rows="2" placeholder="مثال: زيارة ميدانية أُجريت بتاريخ 12/07، استلام تبرع عيني ..." required></textarea>
     <button type="submit">إضافة إلى السجل</button>

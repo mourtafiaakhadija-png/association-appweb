@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS acces_dons_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(150) NOT NULL,
+    token VARCHAR(64) NOT NULL,
+    expire_at DATETIME NOT NULL,
+    utilise TINYINT(1) NOT NULL DEFAULT 0,
+    date_creation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_token (token)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

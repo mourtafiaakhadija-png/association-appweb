@@ -69,8 +69,8 @@ $categories = $pdo->query("SELECT * FROM categories_projets ORDER BY nom")->fetc
                     <div class="project-progress"><div class="project-progress-fill" style="width:<?= $pct ?>%;"></div></div>
                     <div class="project-progress-label">
                         <?= number_format($p['budget_collecte'],0) ?> / <?= number_format($p['budget_prevu'],0) ?> د.م. (<?= $pct ?>%)
-                        <?php if ($p['budget_collecte'] > $p['budget_prevu']): ?>
-                            <span class="badge-goal-reached">🎉 الهدف تحقق</span>
+                        <?php if ($p['budget_collecte'] == $p['budget_prevu']): ?>
+                            <span class="badge-goal-reached"> الهدف تحقق</span>
                         <?php endif; ?>
                     </div>
                     <a href="projet_detail.php?id=<?= $p['id'] ?>" class="project-card-link">اقرأ المزيد ←</a>

@@ -66,19 +66,21 @@ try {
         $dateDebut = $_POST['date_debut'] ?: null;
         $dateFin = $_POST['date_fin'] ?: null;
 
+        // Statut final selon le bouton utilisé : "حفظ" garde en brouillon, "إرسال للمصادقة" la fait passer à en_attente_validation
+        $action = $_POST['action'] ?? 'enregistrer';
+        $nouveauStatut = ($action === 'soumettre') ? 'en_attente_validation' : 'brouillon';
+
         if ($isEdit) {
-            // Repasse en "brouillon" si elle avait été renvoyée pour correction : le bénévole doit
-            // la resoumettre explicitement via "إرسال للمصادقة" une fois ses modifications faites
             $pdo->prepare(
                 "UPDATE projet_editions SET numero_edition=?, description=?, budget_prevu=?, 
-                 date_debut=?, date_fin=?, statut='brouillon', commentaire_admin=NULL WHERE id=?"
-            )->execute([$numeroEdition, $description, $budgetPrevu, $dateDebut, $dateFin, $id]);
+                 date_debut=?, date_fin=?, statut=?, commentaire_admin=NULL WHERE id=?"
+            )->execute([$numeroEdition, $description, $budgetPrevu, $dateDebut, $dateFin, $nouveauStatut, $id]);
         } else {
             $pdo->prepare(
                 "INSERT INTO projet_editions 
                  (projet_id, numero_edition, description, budget_prevu, date_debut, date_fin, statut, cree_par) 
-                 VALUES (?, ?, ?, ?, ?, ?, 'brouillon', ?)"
-            )->execute([$projetId, $numeroEdition, $description, $budgetPrevu, $dateDebut, $dateFin, $benevoleId]);
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            )->execute([$projetId, $numeroEdition, $description, $budgetPrevu, $dateDebut, $dateFin, $nouveauStatut, $benevoleId]);
             $id = $pdo->lastInsertId();
         }
 
@@ -103,7 +105,7 @@ try {
     // Upload du rapport : autorisé MÊME si l'édition n'est plus modifiable (déjà validée)
     $fichierRapport = handleDocumentUpload('rapport');
     if ($fichierRapport !== null) {
-        $pdo->prepare("UPDATE projet_editions SET fichier_rapport = ? WHERE id = ?")->execute([$fichierRapport, $id]);
+       $pdo->prepare("UPDATE projet_editions SET fichier_rapport = ?, rapport_statut = 'en_attente', commentaire_rapport = NULL WHERE id = ?")->execute([$fichierRapport, $id]);
     }
 
     $pdo->commit();

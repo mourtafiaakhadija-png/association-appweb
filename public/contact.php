@@ -44,7 +44,16 @@ include '../includes/header_public.php';
             <h3> معلومات التواصل</h3>
             <p><i class="fa-solid fa-location-dot" style="color: red;"></i> دوار أولاد عيسى، جماعة أولاد عيسى، قيادة إكلي، إقليم تارودانت</p>
             <hr>
-            <p><i class="fa-solid fa-phone-flip" style="color: #000;"></i> 212648656411+ / 212611249905+</p>
+            <p>
+                <i class="fa-solid fa-phone-flip" style="color: #000;"></i>
+                <a href="https://wa.me/212648656411" target="_blank" style="color:inherit; text-decoration:none;"  class="contact-phone">212648656411+</a>
+                /
+                <a href="https://wa.me/212611249905" target="_blank" style="color:inherit; text-decoration:none;" class="contact-phone">212611249905+</a>
+            </p>
+            <p>
+                <i class="fa-brands fa-whatsapp" style="color:#25D366;"></i>
+                <a href="https://wa.me/212648656411" target="_blank" style="color:#25D366; text-decoration:none; font-weight:600;">تواصلوا معنا عبر واتساب</a>
+            </p>
             <p><i class="fa-solid fa-envelope" style="color: #000;"></i> ass.generation.creative@gmail.com</p>
             <hr>
             <h3> تريدون الانضمام إلينا؟</h3>

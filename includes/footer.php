@@ -14,6 +14,7 @@
         <a href="messages.php">الرسائل</a>
         <a href="candidatures.php">طلبات الترشح</a>
         <a href="comites.php">اللجان</a>
+        <a href="profil.php">⚙️ حسابي</a>
         <a href="../public/index.php">الصفحة الرئيسية</a>
     </div>
 
