@@ -1,12 +1,22 @@
 <?php
-require_once '../config/db.php';
-require_once '../includes/mailer.php';
+require_once 'config/db.php';
+require_once 'includes/csrf.php'; 
+require_once 'includes/mailer.php';
 
+if (session_status() === PHP_SESSION_NONE) session_start();
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: contact.php');
     exit;
 }
 
+
+verifierJetonCsrf();
+
+if (!empty($_POST['website'])) {
+    // Bot détecté silencieusement
+    header('Location: contact.php?success=1'); 
+    exit;
+}
 $nom = trim($_POST['nom'] ?? '');
 $email = trim($_POST['email'] ?? '');
 $sujet = trim($_POST['sujet'] ?? '');

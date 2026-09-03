@@ -1,7 +1,7 @@
 <?php
-require_once '../config/db.php';
+require_once 'config/db.php';
 $pageTitle = 'معرض الصور';
-include '../includes/header_public.php';
+include 'includes/header_public.php';
 
 $photos = $pdo->query(
     "SELECT ph.url, p.titre 
@@ -36,4 +36,4 @@ $photos = $pdo->query(
     </div>
 </section>
 
-<?php include '../includes/footer_public.php'; ?>
+<?php include 'includes/footer_public.php'; ?>

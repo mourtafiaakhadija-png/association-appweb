@@ -1,6 +1,6 @@
 <?php
-require_once '../config/db.php';
-require_once '../includes/notifications.php';
+require_once 'config/db.php';
+require_once 'includes/notifications.php';
 
 $email = $_GET['email'] ?? '';
 $token = $_GET['token'] ?? '';
@@ -15,7 +15,7 @@ if ($email && $token && hash_equals(genererJetonDesabonnement($email), $token)) 
 }
 
 $pageTitle = 'إلغاء الاشتراك';
-include '../includes/header_public.php';
+include 'includes/header_public.php';
 ?>
 <section class="section">
     <div class="container" style="text-align:center; padding: 3rem 0;">
@@ -23,4 +23,4 @@ include '../includes/header_public.php';
         <a href="index.php" class="btn-outline-white">العودة إلى الموقع</a>
     </div>
 </section>
-<?php include '../includes/footer_public.php'; ?>
+<?php include 'includes/footer_public.php'; ?>

@@ -23,7 +23,7 @@ $nbNotifications = (int) $stmtNotif->fetchColumn();
 <body>
 <header class="benevole-header">
     <div class="benevole-header-brand">
-        <img src="../public/images/logo_association.png" alt="" class="benevole-header-logo" onerror="this.style.display='none'">
+        <img src="../images/logo_association.png" alt="" class="benevole-header-logo" onerror="this.style.display='none'">
         <h1>فضاء المتطوع</h1>
     </div>
 

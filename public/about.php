@@ -1,7 +1,7 @@
 <?php
-require_once '../config/db.php';
+require_once 'config/db.php';
 $pageTitle = 'من نحن';
-include '../includes/header_public.php';
+include 'includes/header_public.php';
 ?>
 
 <section class="page-hero">
@@ -84,4 +84,4 @@ include '../includes/header_public.php';
     </div>
 </section>
 
-<?php include '../includes/footer_public.php'; ?>
+<?php include 'includes/footer_public.php'; ?>

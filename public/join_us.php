@@ -1,8 +1,10 @@
 <?php
-require_once '../config/db.php';
+require_once 'config/db.php';
+require_once 'includes/csrf.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
 $pageTitle = 'انضم إلينا';
 
-include '../includes/header_public.php';
+include 'includes/header_public.php';
 ?>
 
 <section class="page-hero orange">
@@ -23,6 +25,7 @@ include '../includes/header_public.php';
                 <p class="error">يرجى ملء جميع الحقول المطلوبة بشكل صحيح.</p>
             <?php endif; ?>
             <form method="POST" action="join_us_process.php" class="don-form" enctype="multipart/form-data">
+                <input type="text" name="website" style="position:absolute; left:-9999px;" tabindex="-1" autocomplete="off">
                 <label>الاسم الشخصي</label>
                 <input type="text" name="prenom" required placeholder="اسمك الشخصي">
 
@@ -58,7 +61,7 @@ include '../includes/header_public.php';
 
                 <label>لماذا تريد الانضمام إلينا؟</label>
                 <textarea name="motivation" rows="4" required placeholder="حدثنا عن دوافعك للتطوع معنا" style="width:100%; padding:0.65rem; margin-top:0.35rem; border:1px solid var(--border); border-radius:8px; font-family:var(--font-body);"></textarea>
-
+                <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
                 <button type="submit">إرسال الترشح</button>
                 <p class="form-note">سيتم دراسة ترشحكم من طرف فريقنا، وستتوصلون بجواب عبر البريد الإلكتروني.</p>
             </form>
@@ -66,4 +69,4 @@ include '../includes/header_public.php';
     </div>
 </section>
 
-<?php include '../includes/footer_public.php'; ?>
+<?php include 'includes/footer_public.php'; ?>

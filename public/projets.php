@@ -1,7 +1,7 @@
 <?php
-require_once '../config/db.php';
+require_once 'config/db.php';
 $pageTitle = 'مشاريعنا';
-include '../includes/header_public.php';
+include 'includes/header_public.php';
 
 $filtreCategorie = $_GET['categorie'] ?? '';
 
@@ -69,7 +69,7 @@ $categories = $pdo->query("SELECT * FROM categories_projets ORDER BY nom")->fetc
                     <div class="project-progress"><div class="project-progress-fill" style="width:<?= $pct ?>%;"></div></div>
                     <div class="project-progress-label">
                         <?= number_format($p['budget_collecte'],0) ?> / <?= number_format($p['budget_prevu'],0) ?> د.م. (<?= $pct ?>%)
-                        <?php if ($p['budget_collecte'] == $p['budget_prevu']): ?>
+                        <?php if ($p['budget_prevu'] > 0 && $p['budget_collecte'] == $p['budget_prevu']): ?>
                             <span class="badge-goal-reached"> الهدف تحقق</span>
                         <?php endif; ?>
                     </div>
@@ -82,4 +82,4 @@ $categories = $pdo->query("SELECT * FROM categories_projets ORDER BY nom")->fetc
     </div>
 </section>
 
-<?php include '../includes/footer_public.php'; ?>
+<?php include 'includes/footer_public.php'; ?>

@@ -1,10 +1,19 @@
 <?php
-require_once '../config/db.php';
-require_once '../includes/mailer.php';
-require_once '../includes/upload_helper.php';
+require_once 'config/db.php';
+require_once 'includes/csrf.php';
+require_once 'includes/mailer.php';
+require_once 'includes/upload_helper.php';
 
+if (session_status() === PHP_SESSION_NONE) session_start();
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: join_us.php');
+    exit;
+}
+
+verifierJetonCsrf();
+
+if (!empty($_POST['website'])) {
+    header('Location: join_us.php?success=1');
     exit;
 }
 

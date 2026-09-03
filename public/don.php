@@ -1,5 +1,7 @@
 <?php
-require_once '../config/db.php';
+require_once 'config/db.php';
+require_once 'includes/csrf.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
 $pageTitle = 'تبرع الآن';
 
 $projetPreselectionne = (int) ($_GET['projet_id'] ?? 0);
@@ -34,7 +36,7 @@ if (empty($projets)) {
     ")->fetchAll();
 }
 
-include '../includes/header_public.php';
+include 'includes/header_public.php';
 ?>
 
 <section class="page-hero orange">
@@ -75,7 +77,7 @@ include '../includes/header_public.php';
                     <option value="especes">نقدا (في مقر الجمعية)</option>
                     <option value="cheque">شيك</option>
                 </select>
-
+                <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
                 <button type="submit">تأكيد التبرع</button>
                 <p class="form-note">بعد التأكيد، سنسجل تبرعكم ونرسل لكم تفاصيل الحساب البنكي عبر البريد الإلكتروني لإتمام التحويل.</p>
             </form>
@@ -100,4 +102,4 @@ include '../includes/header_public.php';
     </div>
 </section>
 
-<?php include '../includes/footer_public.php'; ?>
+<?php include 'includes/footer_public.php'; ?>

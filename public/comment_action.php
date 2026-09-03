@@ -1,11 +1,27 @@
 <?php
 
-require_once '../config/db.php';
+require_once 'config/db.php';
+require_once 'includes/csrf.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: projets.php');
     exit;
 }
+
+verifierJetonCsrf();
+
+if (!empty($_POST['website'])) {
+    header('Location: projet_detail.php?id=' . (int)($_POST['projet_id'] ?? 0) . '#comments');
+    exit;
+}
+
+// Rate limiting
+if (isset($_SESSION['last_comment']) && (time() - $_SESSION['last_comment']) < 30) {
+    header('Location: projet_detail.php?id=' . (int)($_POST['projet_id'] ?? 0) . '#comments');
+    exit;
+}
+$_SESSION['last_comment'] = time();
 
 $projetId = (int) ($_POST['projet_id'] ?? 0);
 $nom = trim($_POST['nom'] ?? '');

@@ -1,5 +1,8 @@
 <?php
-require_once '../config/db.php';
+require_once 'config/db.php';
+require_once 'includes/csrf.php';
+
+if (session_status() === PHP_SESSION_NONE) session_start();
 
 $id = (int) ($_GET['id'] ?? 0);
 $stmt = $pdo->prepare(
@@ -10,9 +13,9 @@ $stmt->execute([$id]);
 $projet = $stmt->fetch();
 
 if (!$projet) {
-    require_once '../includes/header_public.php';
+    require_once 'includes/header_public.php';
     echo '<section class="section"><div class="container"><p class="badge-empty">المشروع غير موجود.</p></div></section>';
-    include '../includes/footer_public.php';
+    include 'includes/footer_public.php';
     exit;
 }
 
@@ -71,7 +74,7 @@ $cibleLabels = [
 $statutLabels = ['en_cours' => 'قيد التنفيذ', 'termine' => 'مكتمل', 'suspendu' => 'متوقف مؤقتا'];
 
 $pageTitle = $projet['titre'];
-include '../includes/header_public.php';
+include 'includes/header_public.php';
 
 $pct = 0;
 if ($editionActuelle && $editionActuelle['budget_prevu'] > 0) {
@@ -138,7 +141,7 @@ if ($editionActuelle && $editionActuelle['budget_prevu'] > 0) {
                     <?php endif; ?>
                 </ul>
 
-                <a href="don.php?projet_id=<?= $projet['id'] ?>" class="btn-donate-full">تبرع لهذا المشروع 🤲</a>
+                <a href="don.php?projet_id=<?= (int) $projet['id'] ?>" class="btn-donate-full">تبرع لهذا المشروع 🤲</a>
             </div>
         </div>
 
@@ -268,7 +271,9 @@ if ($editionActuelle && $editionActuelle['budget_prevu'] > 0) {
             <h2>التعليقات (<?= count($commentaires) ?>)</h2>
 
             <form method="POST" action="comment_action.php" class="comment-form">
-                <input type="hidden" name="projet_id" value="<?= $projet['id'] ?>">
+                <input type="text" name="website" style="position:absolute; left:-9999px;" tabindex="-1" autocomplete="off">
+                <input type="hidden" name="projet_id" value="<?= (int) $projet['id'] ?>">
+                <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
                 <input type="text" name="nom" placeholder="اسمك" required maxlength="150">
                 <input type="email" name="email" placeholder="بريدك الإلكتروني (لن يظهر للعموم)" required maxlength="150">
                 <textarea name="message" placeholder="اكتب تعليقك هنا..." rows="3" required maxlength="1000"></textarea>
@@ -296,4 +301,4 @@ if ($editionActuelle && $editionActuelle['budget_prevu'] > 0) {
     </div>
 </section>
 
-<?php include '../includes/footer_public.php'; ?>
+<?php include 'includes/footer_public.php'; ?>

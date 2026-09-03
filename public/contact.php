@@ -1,8 +1,10 @@
 <?php
-require_once '../config/db.php';
+require_once 'config/db.php';
+require_once 'includes/csrf.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
 $pageTitle = 'اتصل بنا';
 
-include '../includes/header_public.php';
+include 'includes/header_public.php';
 ?>
 
 <section class="page-hero blue">
@@ -24,6 +26,7 @@ include '../includes/header_public.php';
                 <p class="info-note">تم إرسال رسالتكم بنجاح، شكرا لتواصلكم معنا!</p>
             <?php endif; ?>
             <form method="POST" action="contact_process.php" class="don-form">
+                <input type="text" name="website" style="position:absolute; left:-9999px;" tabindex="-1" autocomplete="off">
                 <label>الاسم الكامل</label>
                 <input type="text" name="nom" required placeholder="اسمك الكامل">
 
@@ -35,7 +38,7 @@ include '../includes/header_public.php';
 
                 <label>الرسالة</label>
                 <textarea name="message" rows="6" required placeholder="اكتب رسالتك هنا..." style="width:100%; padding:0.65rem; margin-top:0.35rem; border:1px solid var(--border); border-radius:8px; font-family:var(--font-body);"></textarea>
-
+                <input type="hidden" name="csrf_token" value="<?= genererJetonCsrf() ?>">
                 <button type="submit">إرسال الرسالة</button>
             </form>
         </div>
@@ -64,4 +67,4 @@ include '../includes/header_public.php';
     </div>
 </section>
 
-<?php include '../includes/footer_public.php'; ?>
+<?php include 'includes/footer_public.php'; ?>

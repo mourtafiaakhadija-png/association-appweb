@@ -17,7 +17,7 @@ function estDesabonne(PDO $pdo, string $email): bool
 function piedDePageDesabonnement(string $email): string
 {
     $token = genererJetonDesabonnement($email);
-    $lien = SITE_URL . "/public/desabonnement.php?email=" . urlencode($email) . "&token=" . $token;
+    $lien = SITE_URL . "/desabonnement.php?email=" . urlencode($email) . "&token=" . $token;
     return "<hr><p style='font-size:12px;color:#888;'>لم ترغبوا في تلقي هذه الإشعارات؟ <a href='$lien'>اضغطوا هنا لإلغاء الاشتراك</a>.</p>";
 }
 
@@ -31,7 +31,7 @@ function notifierDonateursProjet(PDO $pdo, int $projetId, string $projetTitre): 
     $stmt->execute([$projetId]);
     $donateurs = $stmt->fetchAll();
 
-    $lien = SITE_URL . "/public/projet_detail.php?id=" . $projetId;
+    $lien = SITE_URL . "/projet_detail.php?id=" . $projetId;
 
     foreach ($donateurs as $d) {
         if (estDesabonne($pdo, $d['email_donateur'])) continue;
@@ -57,7 +57,7 @@ function notifierNouveauProjetOuvert(PDO $pdo, int $projetId, string $projetTitr
     );
     $donateurs = $stmt->fetchAll();
 
-    $lien = SITE_URL . "/public/projet_detail.php?id=" . $projetId;
+    $lien = SITE_URL . "/projet_detail.php?id=" . $projetId;
 
     foreach ($donateurs as $d) {
         if (estDesabonne($pdo, $d['email_donateur'])) continue;

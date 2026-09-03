@@ -14,7 +14,7 @@
 <body>
 <header class="admin-header">
     <div class="admin-header-brand">
-        <img src="../public/images/logo_association.png" alt="" class="admin-header-logo" onerror="this.style.display='none'">
+        <img src="../images/logo_association.png" alt="" class="admin-header-logo" onerror="this.style.display='none'">
         <h1>فضاء الإدارة</h1>
     </div>
     

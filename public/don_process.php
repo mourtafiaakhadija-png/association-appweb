@@ -1,11 +1,16 @@
 <?php
-require_once '../config/db.php';
-require_once '../includes/mailer.php';
+require_once 'config/db.php';
+require_once 'includes/csrf.php';
+require_once 'includes/mailer.php';
+
+if (session_status() === PHP_SESSION_NONE) session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: don.php');
     exit;
 }
+
+verifierJetonCsrf();
 
 $projetId = (int) ($_POST['projet_id'] ?? 0);
 $nomDonateur = trim($_POST['nom_donateur'] ?? '');

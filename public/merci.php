@@ -1,5 +1,5 @@
 <?php
-require_once '../config/db.php';
+require_once 'config/db.php';
 $pageTitle = 'شكرا لكم';
 
 $donId = (int) ($_GET['don_id'] ?? 0);
@@ -12,7 +12,7 @@ if ($donId > 0) {
     $don = $stmt->fetch();
 }
 
-include '../includes/header_public.php';
+include 'includes/header_public.php';
 ?>
 
 <section class="page-hero">
@@ -42,4 +42,4 @@ include '../includes/header_public.php';
     </div>
 </section>
 
-<?php include '../includes/footer_public.php'; ?>
+<?php include 'includes/footer_public.php'; ?>

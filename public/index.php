@@ -1,7 +1,7 @@
 <?php
-require_once '../config/db.php';
+require_once 'config/db.php';
 $pageTitle = 'الرئيسية';
-include '../includes/header_public.php';
+include 'includes/header_public.php';
 
 
 // Éditions "à la une" marquées explicitement par l'admin, une seule par projet (la plus récente)
@@ -52,7 +52,7 @@ SELECT url FROM photos_projets ORDER BY RAND() LIMIT 12"
 <section class="hero">
     <div class="hero-bg-slider" id="heroSlider">
         <?php foreach ($photosHero as $i => $ph): ?>
-            <img src="../uploads/<?= htmlspecialchars($ph['url']) ?>" class="<?= $i === 0 ?'active' : '' ?>">
+            <img src="../uploads/<?= htmlspecialchars($ph['url']) ?>" alt="صورة من أنشطة جمعية الجيل المبدع" class="<?= $i === 0 ?'active' : '' ?>">
             <?php endforeach; ?>
     </div>
     <div class="hero-overlay"></div>
@@ -100,7 +100,7 @@ SELECT url FROM photos_projets ORDER BY RAND() LIMIT 12"
             ?>
             <div class="project-card">
                 <?php if ($p['photo']): ?>
-                    <img src="../uploads/<?= htmlspecialchars($p['photo']) ?>" class="project-card-img">
+                    <img src="../uploads/<?= htmlspecialchars($p['photo']) ?>" alt="صورة من أنشطة جمعية الجيل المبدع" class="project-card-img">
                 <?php else: ?>
                     <div class="project-card-img placeholder">لا توجد صورة</div>
                 <?php endif; ?>
@@ -111,7 +111,7 @@ SELECT url FROM photos_projets ORDER BY RAND() LIMIT 12"
                    <div class="project-progress"><div class="project-progress-fill" style="width:<?= $pct ?>%;"></div></div>
                    <div class="project-progress-label">
                         <?= number_format($p['budget_collecte'],0) ?> / <?= number_format($p['budget_prevu'],0) ?> د.م. (<?= $pct ?>%)
-                        <?php if ($p['budget_collecte'] == $p['budget_prevu']): ?>
+                        <?php if ($p['budget_prevu'] > 0 && $p['budget_collecte'] == $p['budget_prevu']): ?>
                             <span class="badge-goal-reached"> الهدف تحقق</span>
                     <?php endif; ?>
                     </div>
@@ -158,4 +158,4 @@ SELECT url FROM photos_projets ORDER BY RAND() LIMIT 12"
     </div>
 </section>
 
-<?php include '../includes/footer_public.php'; ?>
+<?php include 'includes/footer_public.php'; ?>

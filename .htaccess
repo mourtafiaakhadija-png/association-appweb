@@ -1,9 +1,32 @@
-# Empêche l'accès direct au dossier .git si jamais il est déployé par erreur
+# ======================================================
+# .htaccess — racine du site en ligne
+# ======================================================
+
+# Force HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# --- Empêche l'accès direct au dossier .git si jamais il est déployé par erreur ---
 <IfModule mod_alias.c>
     RedirectMatch 404 /\.git
 </IfModule>
 
-# Empêche l'accès direct aux fichiers .sql et .md n'importe où sur le site
+# --- Empêche l'accès direct aux fichiers .sql et .md n'importe où sur le site ---
 <FilesMatch "\.(sql|md)$">
     Require all denied
 </FilesMatch>
+
+# =====================================================
+# Headers de sécurité
+# =====================================================
+<IfModule mod_headers.c>
+
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' kit.fontawesome.com cdn.jsdelivr.net 'sha256-U8wlvgw0OvxSJXpCTzuHalTGhjwlyQ56mLf5bBL3mQU=' 'sha256-eUSsXIzUT+4e3V/M0EFkSIuabPsFPDuT2uYCICM8oLI=' 'sha256-i3mHmf1zy8lFN5CitqZjjkhHvspN2WP1d8dzGIgCD1c='; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com ka-f.fontawesome.com; img-src 'self' data:; connect-src 'self' ka-f.fontawesome.com;"
+
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+    Header unset X-Powered-By
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+</IfModule>

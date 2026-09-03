@@ -1,36 +1,46 @@
 <?php
-require_once '../config/db.php';
-require_once '../includes/mailer.php';
-require_once '../config/mail.php';
+require_once 'config/db.php';
+require_once 'includes/mailer.php';
+require_once 'config/mail.php';
 $pageTitle = 'تبرعاتي';
 
 $dons = [];
 $etape = 'formulaire'; // formulaire | email_envoye | resultats | lien_invalide
 
+if (session_status() === PHP_SESSION_NONE) session_start();
+
 // --- Étape 1 : demande d'accès (POST) → génère un token et l'envoie par email ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
-    $email = trim($_POST['email']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['website'])) {
+    $etape = 'email_envoye'; 
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
 
-    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $token = bin2hex(random_bytes(32));
-        $expireAt = date('Y-m-d H:i:s', time() + 15 * 60); // valable 15 minutes
+    // Rate limiting : نمنعو طلب جديد قبل ما يعدي 60 ثانية على الطلب اللي قبلو
+    if (isset($_SESSION['last_dons_request']) && (time() - $_SESSION['last_dons_request']) < 60) {
+        $etape = 'email_envoye'; // نعطيو نفس الرسالة، بلا ما نبعتو إيميل جديد
+    } else {
+        $_SESSION['last_dons_request'] = time();
 
-        $pdo->prepare(
-            "INSERT INTO acces_dons_tokens (email, token, expire_at) VALUES (?, ?, ?)"
-        )->execute([$email, $token, $expireAt]);
+        $email = trim($_POST['email']);
 
-        $lien = SITE_URL . "/public/mes_dons.php?email=" . urlencode($email) . "&token=" . $token;
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $token = bin2hex(random_bytes(32));
+            $expireAt = date('Y-m-d H:i:s', time() + 15 * 60);
 
-        sendMail($email, $email, 'رابط الاطلاع على تبرعاتكم', "
-            <p>مرحبا،</p>
-            <p>اضغطوا على الرابط التالي للاطلاع على سجل تبرعاتكم (صالح لمدة 15 دقيقة):</p>
-            <p><a href='$lien'>$lien</a></p>
-            <p>إذا لم تطلبوا هذا الرابط، يمكنكم تجاهل هذه الرسالة بأمان.</p>
-        ");
+            $pdo->prepare(
+                "INSERT INTO acces_dons_tokens (email, token, expire_at) VALUES (?, ?, ?)"
+            )->execute([$email, $token, $expireAt]);
+
+            $lien = SITE_URL . "/mes_dons.php?email=" . urlencode($email) . "&token=" . $token;
+
+            sendMail($email, $email, 'رابط الاطلاع على تبرعاتكم', "
+                <p>مرحبا،</p>
+                <p>اضغطوا على الرابط التالي للاطلاع على سجل تبرعاتكم (صالح لمدة 15 دقيقة):</p>
+                <p><a href='$lien'>$lien</a></p>
+                <p>إذا لم تطلبوا هذا الرابط، يمكنكم تجاهل هذه الرسالة بأمان.</p>
+            ");
+        }
+        $etape = 'email_envoye';
     }
-    // Message générique dans tous les cas (email valide ou pas), pour ne jamais révéler
-    // si une adresse est associée à des dons ou même si elle existe.
-    $etape = 'email_envoye';
 }
 
 // --- Étape 2 : vérification du lien reçu par email (GET avec token) ---
@@ -63,7 +73,7 @@ elseif (!empty($_GET['email']) && !empty($_GET['token'])) {
     }
 }
 
-include '../includes/header_public.php';
+include 'includes/header_public.php';
 ?>
 
 <section class="page-hero">
@@ -78,6 +88,7 @@ include '../includes/header_public.php';
 
         <?php if ($etape === 'formulaire' || $etape === 'email_envoye' || $etape === 'lien_invalide'): ?>
             <form method="POST" class="search-dons-form">
+                <input type="text" name="website" style="position:absolute; left:-9999px;" tabindex="-1" autocomplete="off">
                 <input type="email" name="email" placeholder="بريدكم الإلكتروني" required>
                 <button type="submit">إرسال رابط الاطلاع</button>
             </form>
@@ -135,4 +146,4 @@ include '../includes/header_public.php';
     </div>
 </section>
 
-<?php include '../includes/footer_public.php'; ?>
+<?php include 'includes/footer_public.php'; ?>
